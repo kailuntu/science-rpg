@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自然科學王國大冒險：四大元素試煉 (升級養成版 - 康軒三上自然RPG)</title>
+    <title>知識王國大冒險：自然＆社會試煉 (康軒三上 RPG)</title>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Google Fonts 圓體與易讀字體 -->
@@ -140,6 +140,14 @@
             background: #d97706;
             border-radius: 10px;
         }
+        .fx-item {
+            position: absolute;
+            z-index: 40;
+            pointer-events: none;
+            line-height: 1;
+            transform: translate(-50%, -50%);
+            filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9));
+        }
     </style>
 </head>
 <body class="min-h-screen text-amber-950 flex flex-col justify-between p-2 sm:p-4 md:p-6">
@@ -154,10 +162,10 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-1.5">
-                        <span class="bg-emerald-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">康軒三上自然</span>
+                        <span class="bg-emerald-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">康軒三上 自然＋社會</span>
                         <span class="bg-amber-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">裝備養成版</span>
                     </div>
-                    <h1 class="text-base sm:text-xl font-black text-amber-950 tracking-tight">自然科學王國大冒險</h1>
+                    <h1 class="text-base sm:text-xl font-black text-amber-950 tracking-tight">知識王國大冒險</h1>
                 </div>
             </div>
 
@@ -186,7 +194,7 @@
                         <span id="hudGold">100</span>
                     </button>
                     <span class="text-emerald-700 flex items-center gap-1" title="王國徽章">
-                        <i class="fa-solid fa-medal text-emerald-500"></i> <span id="hudBadges">0</span>/4
+                        <i class="fa-solid fa-medal text-emerald-500"></i> <span id="hudBadges">0</span>/10
                     </span>
                 </div>
             </div>
@@ -199,7 +207,7 @@
                 </button>
                 <button onclick="openEncyclopedia()" class="rpg-btn bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-2.5 sm:px-3 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-1">
                     <i class="fa-solid fa-book-open"></i>
-                    <span class="hidden md:inline">自然</span><span>秘笈</span>
+                    <span>秘笈</span>
                 </button>
                 <button onclick="openMistakeRoom()" id="mistakeRoomBtn" class="hidden rpg-btn bg-purple-600 hover:bg-purple-500 text-white font-bold px-2.5 sm:px-3 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-1 relative">
                     <i class="fa-solid fa-Layer-group"></i>
@@ -222,9 +230,9 @@
                 <div class="inline-block bg-amber-200 border-2 border-amber-800 text-amber-950 font-black px-4 py-1 rounded-full text-xs sm:text-sm mb-2 shadow-sm">
                     ✨ 過關領賞金・強化神裝・解鎖百變造型 ✨
                 </div>
-                <h2 class="text-2xl sm:text-4xl font-black text-amber-950 mb-2">自然科學王國：四大元素試煉</h2>
+                <h2 class="text-2xl sm:text-4xl font-black text-amber-950 mb-2">知識王國：自然＆社會大試煉</h2>
                 <p class="text-amber-800 font-medium text-sm sm:text-base leading-relaxed">
-                    歡迎來到康軒版三年級上學期自然科學世界！答對問題並擊敗守關魔物就能領取<span class="kw-highlight">過關寶箱金幣</span>，去商店街強化武器防具、購買魔法藥水，還能幫勇者換上超酷外觀與隨行小寵物喔！
+                    歡迎來到康軒版三年級上學期的自然科學王國與社會人文王國！答對問題並擊敗守關魔物就能領取<span class="kw-highlight">過關寶箱金幣</span>，去商店街強化武器防具、購買魔法藥水，還能幫勇者換上超酷外觀與隨行小寵物喔！
                 </p>
             </div>
 
@@ -342,11 +350,17 @@
                 </div>
             </div>
 
-            <!-- 四大單元關卡網格標題 -->
+            <!-- 科目王國切換 -->
+            <div class="grid grid-cols-2 gap-2 mb-4" id="subjectTabs">
+                <button onclick="switchSubject('science')" id="subjectTab_science" class="rpg-btn font-black py-2.5 rounded-xl text-sm sm:text-base">🔬 自然科學王國</button>
+                <button onclick="switchSubject('social')" id="subjectTab_social" class="rpg-btn font-black py-2.5 rounded-xl text-sm sm:text-base">🏛️ 社會人文王國</button>
+            </div>
+
+            <!-- 單元關卡網格標題 -->
             <div class="flex items-center justify-between mb-3">
                 <h3 class="text-base sm:text-lg font-black text-amber-950 flex items-center gap-2">
                     <i class="fa-solid fa-map-location-dot text-emerald-600"></i>
-                    <span>選擇自然王國試煉關卡（過關可領取高額賞金寶箱！）</span>
+                    <span id="stageGridTitle">選擇自然王國試煉關卡（過關可領取高額賞金寶箱！）</span>
                 </h3>
                 <span class="text-xs font-bold text-amber-800 hidden sm:inline">已通關的關卡也能重複挑戰賺金幣喔！</span>
             </div>
@@ -363,17 +377,17 @@
                         <div>
                             <div class="flex items-center flex-wrap gap-2 mb-1">
                                 <span class="bg-red-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full">最終試煉 BOSS</span>
-                                <span class="bg-amber-400 text-amber-950 text-xs font-black px-2.5 py-0.5 rounded-full">🎁 過關賞金 +350 金幣</span>
+                                <span id="finalBossReward" class="bg-amber-400 text-amber-950 text-xs font-black px-2.5 py-0.5 rounded-full">🎁 過關賞金 +350 金幣</span>
                             </div>
-                            <h3 class="text-lg sm:text-xl font-black text-amber-200">【終極決戰】自然王國大魔王：混沌博士</h3>
-                            <p class="text-xs sm:text-sm text-purple-200 mt-0.5">
+                            <h3 id="finalBossTitle" class="text-lg sm:text-xl font-black text-amber-200">【終極決戰】自然王國大魔王：混沌博士</h3>
+                            <p id="finalBossDesc" class="text-xs sm:text-sm text-purple-200 mt-0.5">
                                 集結「植物、生活中的力、奇妙的空氣、廚房裡的科學」綜合大考題，穿戴好你的最強裝備來挑戰吧！
                             </p>
                         </div>
                     </div>
-                    <button onclick="startStage(4)" class="rpg-btn bg-gradient-to-r from-amber-400 to-red-500 text-white font-black px-5 py-3 rounded-xl text-sm sm:text-base shrink-0 flex items-center gap-2">
+                    <button onclick="startStage(getSubjectBossStage().id)" class="rpg-btn bg-gradient-to-r from-amber-400 to-red-500 text-white font-black px-5 py-3 rounded-xl text-sm sm:text-base shrink-0 flex items-center gap-2">
                         <i class="fa-solid fa-bolt"></i>
-                        <span>挑戰混沌博士</span>
+                        <span id="finalBossBtnText">挑戰混沌博士</span>
                     </button>
                 </div>
             </div>
@@ -615,7 +629,7 @@
                     <span class="w-7 h-7 rounded-full bg-amber-600 text-white flex items-center justify-center text-sm">
                         <i class="fa-solid fa-graduation-cap"></i>
                     </span>
-                    <span class="font-black text-amber-950 text-sm sm:text-base">自然小博士知識卡：</span>
+                    <span class="font-black text-amber-950 text-sm sm:text-base">小博士知識卡：</span>
                 </div>
                 <div class="text-xs sm:text-sm font-bold text-emerald-800 mb-2 bg-emerald-100/80 px-3 py-1.5 rounded-lg border border-emerald-300">
                     正確答案：<span id="expCorrectAnswerText" class="font-black underline"></span>
@@ -637,7 +651,7 @@
             <div class="flex items-center justify-between pb-3 mb-3 border-b-2 border-amber-300">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-book-bookmark text-2xl text-emerald-600"></i>
-                    <h3 class="text-lg sm:text-2xl font-black text-amber-950">康軒三上自然・考前必勝秘笈圖鑑</h3>
+                    <h3 id="encycTitle" class="text-lg sm:text-2xl font-black text-amber-950">康軒三上・考前必勝秘笈圖鑑</h3>
                 </div>
                 <button onclick="closeEncyclopedia()" class="rpg-btn bg-red-500 text-white w-9 h-9 rounded-xl font-black flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
@@ -645,19 +659,9 @@
             </div>
 
             <!-- 四大單元切換分頁 -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4" id="encycTabs">
-                <button onclick="switchEncycTab(0)" id="encycTab_0" class="rpg-btn bg-emerald-500 text-white font-black py-2 px-3 rounded-xl text-xs sm:text-sm">
-                    🌱 一、多彩多姿的植物
-                </button>
-                <button onclick="switchEncycTab(1)" id="encycTab_1" class="rpg-btn bg-amber-100 text-amber-900 font-black py-2 px-3 rounded-xl text-xs sm:text-sm">
-                    🧲 二、生活中的力
-                </button>
-                <button onclick="switchEncycTab(2)" id="encycTab_2" class="rpg-btn bg-amber-100 text-amber-900 font-black py-2 px-3 rounded-xl text-xs sm:text-sm">
-                    🌬️ 三、奇妙的空氣
-                </button>
-                <button onclick="switchEncycTab(3)" id="encycTab_3" class="rpg-btn bg-amber-100 text-amber-900 font-black py-2 px-3 rounded-xl text-xs sm:text-sm">
-                    🧪 四、廚房裡的科學
-                </button>
+            <div class="flex flex-wrap gap-2 mb-2" id="encycSubjectTabs"></div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4" id="encycTabs">
+                <!-- 由 JS 依照科目生成單元分頁 -->
             </div>
 
             <!-- 秘笈內容捲動區 -->
@@ -686,10 +690,11 @@
 
     <!-- 頁尾資訊 -->
     <footer class="max-w-5xl w-full mx-auto mt-3 text-center text-xs text-amber-100/80 font-medium">
-        《自然科學王國大冒險：四大元素試煉 (升級養成版)》｜專為國小三年級上學期（康軒版自然科學）設計之互動複習 RPG
+        《知識王國大冒險》｜專為國小三年級上學期（康軒版自然、社會）設計之互動複習 RPG
     </footer>
 
     <!-- ==================== 遊戲核心邏輯、紙娃娃商店與題庫腳本 ==================== -->
+    <script src="social-data.js"></script>
     <script>
         /* ==========================================================================
            1. Web Audio API 輕快 RPG 音效合成器 (新增金幣聲、打鐵升級聲)
@@ -1179,27 +1184,59 @@
            2-1. 技能學院：攻擊技能清單（mult 傷害倍率、heal 回血、mpGain 回魔、
                 goldMult 金幣倍率、guard 答錯免傷；classId/tier 為職業專屬技能）
            ========================================================================== */
+        // fx 為攻擊特效步驟：t 類型、at 開始毫秒、d 持續毫秒（詳見 playSkillFx）
         const SKILL_CATALOG = [
-            { id: 'normal', icon: '⚡', name: '一般詠唱', mp: 0, tag: '0 MP｜回6MP', desc: '答對造成 1 倍傷害，並回復 6 MP。', mult: 1, mpGain: 6, price: 0, lvReq: 1 },
-            { id: 'double', icon: '🔥', name: '雙倍重擊', mp: 15, tag: '15 MP｜2倍傷', desc: '答對造成 2 倍傷害！', mult: 2, price: 0, lvReq: 1 },
-            { id: 'heal', icon: '🌿', name: '自然治癒', mp: 15, tag: '15 MP｜+45HP', desc: '答對造成傷害，同時回復 45 HP。', mult: 1, heal: 45, price: 0, lvReq: 1 },
-            { id: 'guard', icon: '🔰', name: '預知護盾', mp: 10, tag: '10 MP｜答錯免傷', desc: '如果答錯，完全不會受到傷害；答對則正常攻擊。', mult: 1, guard: true, price: 120, lvReq: 3 },
-            { id: 'drain', icon: '🌀', name: '能量吸收', mp: 0, tag: '0 MP｜+20MP', desc: '傷害稍弱（0.8 倍），但答對可回復 20 MP。', mult: 0.8, mpGain: 20, price: 150, lvReq: 4 },
-            { id: 'goldRush', icon: '💰', name: '點金術', mp: 10, tag: '10 MP｜金幣×2', desc: '答對時獲得的金幣變成 2 倍！', mult: 1, goldMult: 2, price: 250, lvReq: 6 },
-            { id: 'triple', icon: '🌋', name: '三連爆擊', mp: 30, tag: '30 MP｜3倍傷', desc: '答對造成 3 倍傷害的大絕招！', mult: 3, price: 350, lvReq: 8 },
-            { id: 'vampire', icon: '🦇', name: '生命汲取', mp: 20, tag: '20 MP｜1.5倍+回血', desc: '答對造成 1.5 倍傷害並回復 35 HP。', mult: 1.5, heal: 35, price: 400, lvReq: 10 },
+            { id: 'normal', icon: '⚡', name: '一般詠唱', mp: 0, tag: '0 MP｜回6MP', desc: '答對造成 1 倍傷害，並回復 6 MP。', mult: 1, mpGain: 6, price: 0, lvReq: 1,
+                fx: [{ t: 'proj', e: '✨', s: 30, at: 0, d: 350 }, { t: 'burst', e: '⭐', s: 44, at: 350, d: 320 }] },
+            { id: 'double', icon: '🔥', name: '雙倍重擊', mp: 15, tag: '15 MP｜2倍傷', desc: '答對造成 2 倍傷害！', mult: 2, price: 0, lvReq: 1,
+                fx: [{ t: 'slash', c: '#fb923c', n: 2, at: 0, d: 350 }, { t: 'burst', e: '💥', s: 70, at: 250, d: 420 }] },
+            { id: 'heal', icon: '🌿', name: '自然治癒', mp: 15, tag: '15 MP｜+45HP', desc: '答對造成傷害，同時回復 45 HP。', mult: 1, heal: 45, price: 0, lvReq: 1,
+                fx: [{ t: 'proj', e: '🍃', s: 36, at: 0, d: 400 }, { t: 'self', e: '🌿', s: 48, at: 250, d: 650 }] },
+            { id: 'guard', icon: '🔰', name: '預知護盾', mp: 10, tag: '10 MP｜答錯免傷', desc: '如果答錯，完全不會受到傷害；答對則正常攻擊。', mult: 1, guard: true, price: 120, lvReq: 3,
+                fx: [{ t: 'self', e: '🔰', s: 52, at: 0, d: 550 }, { t: 'proj', e: '✨', s: 30, at: 200, d: 350 }] },
+            { id: 'drain', icon: '🌀', name: '能量吸收', mp: 0, tag: '0 MP｜+20MP', desc: '傷害稍弱（0.8 倍），但答對可回復 20 MP。', mult: 0.8, mpGain: 20, price: 150, lvReq: 4,
+                fx: [{ t: 'burst', e: '🌀', s: 70, at: 0, d: 500 }, { t: 'back', e: '💧', n: 3, at: 300, d: 450 }] },
+            { id: 'goldRush', icon: '💰', name: '點金術', mp: 10, tag: '10 MP｜金幣×2', desc: '答對時獲得的金幣變成 2 倍！', mult: 1, goldMult: 2, price: 250, lvReq: 6,
+                fx: [{ t: 'proj', e: '✨', s: 32, at: 0, d: 350 }, { t: 'back', e: '🪙', n: 6, at: 350, d: 550 }] },
+            { id: 'triple', icon: '🌋', name: '三連爆擊', mp: 30, tag: '30 MP｜3倍傷', desc: '答對造成 3 倍傷害的大絕招！', mult: 3, price: 350, lvReq: 8,
+                fx: [{ t: 'slash', c: '#f97316', n: 3, at: 0, d: 450 }, { t: 'burst', e: '🔥', s: 90, at: 350, d: 500 }] },
+            { id: 'vampire', icon: '🦇', name: '生命汲取', mp: 20, tag: '20 MP｜1.5倍+回血', desc: '答對造成 1.5 倍傷害並回復 35 HP。', mult: 1.5, heal: 35, price: 400, lvReq: 10,
+                fx: [{ t: 'proj', e: '🦇', s: 44, at: 0, d: 450 }, { t: 'back', e: '❤️', n: 3, at: 450, d: 450 }] },
             // 魔法師系
-            { id: 'fireball', icon: '☄️', name: '烈焰火球', mp: 25, tag: '25 MP｜2.5倍傷', desc: '魔法師一轉技能：2.5 倍傷害。', mult: 2.5, classId: 'mage', tier: 1 },
-            { id: 'meteor', icon: '🌠', name: '隕石天降', mp: 40, tag: '40 MP｜4倍傷', desc: '大魔導士二轉技能：4 倍傷害。', mult: 4, classId: 'mage', tier: 2 },
-            { id: 'starNova', icon: '🌟', name: '星辰新星', mp: 55, tag: '55 MP｜6倍傷', desc: '星辰賢者三轉奧義：6 倍傷害！', mult: 6, classId: 'mage', tier: 3 },
+            { id: 'fireball', icon: '☄️', name: '烈焰火球', mp: 25, tag: '25 MP｜2.5倍傷', desc: '魔法師一轉技能：2.5 倍傷害。', mult: 2.5, classId: 'mage', tier: 1,
+                fx: [{ t: 'proj', e: '🔥', s: 60, at: 0, d: 500, spin: true }, { t: 'burst', e: '💥', s: 100, at: 500, d: 450 }, { t: 'ring', c: '#f97316', at: 500, d: 450 }] },
+            { id: 'meteor', icon: '🌠', name: '隕石天降', mp: 40, tag: '40 MP｜4倍傷', desc: '大魔導士二轉技能：4 倍傷害。', mult: 4, classId: 'mage', tier: 2,
+                fx: [{ t: 'fall', e: '☄️', s: 90, n: 1, at: 0, d: 550 }, { t: 'burst', e: '💥', s: 120, at: 550, d: 500 }, { t: 'ring', c: '#ef4444', at: 550, d: 500 }] },
+            { id: 'starNova', icon: '🌟', name: '星辰新星', mp: 55, tag: '55 MP｜6倍傷', desc: '星辰賢者三轉奧義：6 倍傷害！', mult: 6, classId: 'mage', tier: 3,
+                fx: [{ t: 'fall', e: '🌟', s: 44, n: 6, at: 0, d: 500 }, { t: 'ring', c: '#facc15', at: 500, d: 600 }, { t: 'burst', e: '🌟', s: 130, at: 500, d: 600 }] },
             // 騎士系
-            { id: 'holyStrike', icon: '⚔️', name: '聖光斬', mp: 20, tag: '20 MP｜1.5倍+回血', desc: '守護騎士一轉技能：1.5 倍傷害並回復 50 HP。', mult: 1.5, heal: 50, classId: 'knight', tier: 1 },
-            { id: 'fortress', icon: '🏰', name: '鋼鐵堡壘', mp: 25, tag: '25 MP｜2倍+免傷', desc: '聖騎士二轉技能：2 倍傷害，答錯完全免傷。', mult: 2, guard: true, classId: 'knight', tier: 2 },
-            { id: 'judgement', icon: '⚡', name: '審判之光', mp: 45, tag: '45 MP｜3.5倍+回滿', desc: '光明守護神三轉奧義：3.5 倍傷害並回滿 HP！', mult: 3.5, heal: 9999, classId: 'knight', tier: 3 },
+            { id: 'holyStrike', icon: '⚔️', name: '聖光斬', mp: 20, tag: '20 MP｜1.5倍+回血', desc: '守護騎士一轉技能：1.5 倍傷害並回復 50 HP。', mult: 1.5, heal: 50, classId: 'knight', tier: 1,
+                fx: [{ t: 'slash', c: '#fde047', n: 1, at: 0, d: 350 }, { t: 'pillar', c: '253,224,71', at: 200, d: 550 }, { t: 'self', e: '✨', s: 44, at: 400, d: 500 }] },
+            { id: 'fortress', icon: '🏰', name: '鋼鐵堡壘', mp: 25, tag: '25 MP｜2倍+免傷', desc: '聖騎士二轉技能：2 倍傷害，答錯完全免傷。', mult: 2, guard: true, classId: 'knight', tier: 2,
+                fx: [{ t: 'self', e: '🏰', s: 64, at: 0, d: 600 }, { t: 'slash', c: '#93c5fd', n: 2, at: 300, d: 380 }, { t: 'burst', e: '💥', s: 80, at: 500, d: 400 }] },
+            { id: 'judgement', icon: '⚡', name: '審判之光', mp: 45, tag: '45 MP｜3.5倍+回滿', desc: '光明守護神三轉奧義：3.5 倍傷害並回滿 HP！', mult: 3.5, heal: 9999, classId: 'knight', tier: 3,
+                fx: [{ t: 'pillar', c: '253,224,71', at: 0, d: 650 }, { t: 'fall', e: '⚡', s: 64, n: 3, at: 0, d: 400 }, { t: 'burst', e: '💥', s: 110, at: 450, d: 500 }] },
             // 學者系
-            { id: 'insight', icon: '🔍', name: '博學洞察', mp: 15, tag: '15 MP｜1.5倍+金×2', desc: '見習學者一轉技能：1.5 倍傷害，金幣 ×2。', mult: 1.5, goldMult: 2, classId: 'scholar', tier: 1 },
-            { id: 'wisdom', icon: '📚', name: '智慧泉湧', mp: 10, tag: '10 MP｜2倍+回30MP', desc: '自然博士二轉技能：2 倍傷害並回復 30 MP。', mult: 2, mpGain: 30, classId: 'scholar', tier: 2 },
-            { id: 'eureka', icon: '💡', name: '靈光乍現', mp: 40, tag: '40 MP｜4倍+金×3', desc: '宇宙智者三轉奧義：4 倍傷害，金幣 ×3！', mult: 4, goldMult: 3, classId: 'scholar', tier: 3 }
+            { id: 'insight', icon: '🔍', name: '博學洞察', mp: 15, tag: '15 MP｜1.5倍+金×2', desc: '見習學者一轉技能：1.5 倍傷害，金幣 ×2。', mult: 1.5, goldMult: 2, classId: 'scholar', tier: 1,
+                fx: [{ t: 'proj', e: '🔍', s: 50, at: 0, d: 450 }, { t: 'burst', e: '💡', s: 70, at: 450, d: 400 }, { t: 'back', e: '🪙', n: 5, at: 500, d: 500 }] },
+            { id: 'wisdom', icon: '📚', name: '智慧泉湧', mp: 10, tag: '10 MP｜2倍+回30MP', desc: '自然博士二轉技能：2 倍傷害並回復 30 MP。', mult: 2, mpGain: 30, classId: 'scholar', tier: 2,
+                fx: [{ t: 'proj', e: '📚', s: 50, at: 0, d: 450, spin: true }, { t: 'burst', e: '💥', s: 80, at: 450, d: 400 }, { t: 'self', e: '💙', s: 44, at: 500, d: 500 }] },
+            { id: 'eureka', icon: '💡', name: '靈光乍現', mp: 40, tag: '40 MP｜4倍+金×3', desc: '宇宙智者三轉奧義：4 倍傷害，金幣 ×3！', mult: 4, goldMult: 3, classId: 'scholar', tier: 3,
+                fx: [{ t: 'self', e: '💡', s: 64, at: 0, d: 500 }, { t: 'fall', e: '⚡', s: 56, n: 2, at: 300, d: 400 }, { t: 'ring', c: '#a3e635', at: 700, d: 500 }, { t: 'back', e: '🪙', n: 8, at: 700, d: 600 }] },
+            // 盜賊系
+            { id: 'backstab', icon: '🗡️', name: '背刺偷襲', mp: 15, tag: '15 MP｜2倍+偷金', desc: '見習盜賊一轉技能：2 倍傷害，金幣 ×1.5。', mult: 2, goldMult: 1.5, classId: 'thief', tier: 1,
+                fx: [{ t: 'proj', e: '🗡️', s: 46, at: 0, d: 260 }, { t: 'slash', c: '#e5e7eb', n: 2, at: 220, d: 320 }, { t: 'back', e: '🪙', n: 3, at: 450, d: 450 }] },
+            { id: 'shadowStrike', icon: '🌑', name: '影分身斬', mp: 30, tag: '30 MP｜3.5倍傷', desc: '暗影刺客二轉技能：分身連斬 3.5 倍傷害！', mult: 3.5, classId: 'thief', tier: 2,
+                fx: [{ t: 'slash', c: '#7c3aed', n: 5, at: 0, d: 550 }, { t: 'burst', e: '🌑', s: 90, at: 400, d: 450 }] },
+            { id: 'phantomHeist', icon: '🎭', name: '幻影大盜', mp: 45, tag: '45 MP｜5倍+金×3', desc: '幻影神偷三轉奧義：5 倍傷害，金幣 ×3！', mult: 5, goldMult: 3, classId: 'thief', tier: 3,
+                fx: [{ t: 'burst', e: '🎭', s: 80, at: 0, d: 400 }, { t: 'slash', c: '#a855f7', n: 6, at: 200, d: 550 }, { t: 'back', e: '💎', n: 8, at: 650, d: 600 }] },
+            // 獵人弓箭手系
+            { id: 'arrowShot', icon: '🏹', name: '穿雲箭', mp: 20, tag: '20 MP｜2.2倍傷', desc: '見習獵人一轉技能：一箭穿雲 2.2 倍傷害。', mult: 2.2, classId: 'hunter', tier: 1,
+                fx: [{ t: 'arrow', c: '#78350f', n: 1, at: 0, d: 350 }, { t: 'burst', e: '🎯', s: 70, at: 350, d: 420 }] },
+            { id: 'arrowRain', icon: '🌧️', name: '萬箭齊發', mp: 35, tag: '35 MP｜3.5倍傷', desc: '神射手二轉技能：箭雨覆蓋 3.5 倍傷害！', mult: 3.5, classId: 'hunter', tier: 2,
+                fx: [{ t: 'arrow', c: '#78350f', n: 3, at: 0, d: 350 }, { t: 'rain', c: '#0f766e', n: 10, at: 200, d: 450 }, { t: 'burst', e: '💥', s: 90, at: 600, d: 400 }] },
+            { id: 'starArrow', icon: '💫', name: '流星神箭', mp: 50, tag: '50 MP｜5.5倍+回MP', desc: '天弓獵神三轉奧義：5.5 倍傷害並回復 20 MP！', mult: 5.5, mpGain: 20, classId: 'hunter', tier: 3,
+                fx: [{ t: 'arrow', c: '#0ea5e9', n: 5, at: 0, d: 380 }, { t: 'fall', e: '🌠', s: 80, n: 1, at: 250, d: 450 }, { t: 'ring', c: '#38bdf8', at: 700, d: 500 }, { t: 'burst', e: '💥', s: 110, at: 700, d: 450 }] }
         ];
 
         /* ==========================================================================
@@ -1232,14 +1269,34 @@
                     { name: '自然博士', bonusText: '最大MP +60、答對金幣 +20', mpBonus: 60, goldBonus: 20 },
                     { name: '宇宙智者', bonusText: '最大MP +100、答對金幣 +35', mpBonus: 100, goldBonus: 35 }
                 ]
+            },
+            {
+                id: 'thief', icon: '🗡️', name: '盜賊系', color: 'from-violet-600 to-fuchsia-700',
+                desc: '身手敏捷，攻擊時有機率打出「爆擊」雙倍傷害，還很會偷金幣！',
+                tiers: [
+                    { name: '見習盜賊', bonusText: '15% 爆擊（傷害×2）、答對金幣 +5', critChance: 0.15, goldBonus: 5 },
+                    { name: '暗影刺客', bonusText: '25% 爆擊（傷害×2）、答對金幣 +10', critChance: 0.25, goldBonus: 10 },
+                    { name: '幻影神偷', bonusText: '35% 爆擊（傷害×2）、答對金幣 +20', critChance: 0.35, goldBonus: 20 }
+                ]
+            },
+            {
+                id: 'hunter', icon: '🏹', name: '獵人弓箭手系', color: 'from-lime-600 to-emerald-700',
+                desc: '百步穿楊的神射手，攻擊力與魔力上限都會提升，攻守均衡！',
+                tiers: [
+                    { name: '見習獵人', bonusText: '攻擊力 ×1.1、最大MP +20', atkMult: 1.1, mpBonus: 20 },
+                    { name: '神射手', bonusText: '攻擊力 ×1.2、最大MP +40', atkMult: 1.2, mpBonus: 40 },
+                    { name: '天弓獵神', bonusText: '攻擊力 ×1.35、最大MP +60', atkMult: 1.35, mpBonus: 60 }
+                ]
             }
         ];
 
+        // classCorrect：轉職（或換職業）後需要用目前職業答對的題數
         const CLASS_ADVANCE_REQS = [
-            { tier: 1, label: '一轉', lv: 5, badges: 1, boss: false, price: 200 },
-            { tier: 2, label: '二轉', lv: 12, badges: 3, boss: false, price: 500 },
-            { tier: 3, label: '三轉', lv: 20, badges: 4, boss: true, price: 1000 }
+            { tier: 1, label: '一轉', lv: 5, badges: 1, boss: false, classCorrect: 0, price: 200 },
+            { tier: 2, label: '二轉', lv: 12, badges: 3, boss: false, classCorrect: 20, price: 500 },
+            { tier: 3, label: '三轉', lv: 20, badges: 4, boss: true, classCorrect: 40, price: 1000 }
         ];
+        const CLASS_SWITCH_PRICE = 300;
 
         function getClassInfo() {
             const path = CLASS_TREE.find(c => c.id === player.classPath);
@@ -1297,7 +1354,8 @@
                 'm4_3': `<svg viewBox="0 0 120 120" class="w-full h-full drop-shadow"><path d="M35 45 C25 22 95 22 85 45 Z" fill="#fff" stroke="#581c87" stroke-width="4"/><circle cx="60" cy="70" r="32" fill="#c084fc" stroke="#581c87" stroke-width="4"/><circle cx="48" cy="64" r="5" fill="#fef08a"/><circle cx="72" cy="64" r="5" fill="#fef08a"/><path d="M45 80 Q60 72 75 80" fill="none" stroke="#581c87" stroke-width="4" stroke-linecap="round"/></svg>`,
                 'm5_1': `<svg viewBox="0 0 120 120" class="w-full h-full drop-shadow"><circle cx="60" cy="60" r="46" fill="#4c1d95" stroke="#fde047" stroke-width="4"/><path d="M30 48 L52 56 M90 48 L68 56" stroke="#fde047" stroke-width="4" stroke-linecap="round"/><circle cx="46" cy="60" r="7" fill="#ef4444"/><circle cx="74" cy="60" r="7" fill="#ef4444"/><path d="M42 82 Q60 70 78 82" fill="none" stroke="#fde047" stroke-width="4" stroke-linecap="round"/></svg>`
             };
-            return svgs[monsterId] || svgs['m5_1'];
+            // 社會科魔物共用同一單元的造型（例如 s1_1、s1_2 都用 s1）
+            return svgs[monsterId] || SOCIAL_MONSTER_SVGS[monsterId.split('_')[0]] || svgs['m5_1'];
         }
 
         /* ==========================================================================
@@ -1305,7 +1363,7 @@
            ========================================================================== */
         const KINGDOM_STAGES = [
             {
-                id: 0,
+                id: 0, subject: 'science', unitIdx: 0,
                 unitTitle: '第一單元：多彩多姿的植物',
                 stageName: '翠綠植物森林',
                 badgeName: '森林生機徽章',
@@ -1314,7 +1372,7 @@
                 themeBg: 'from-emerald-200 via-lime-100 to-amber-100',
                 cardBorder: 'border-emerald-600',
                 tagColor: 'bg-emerald-600',
-                desc: '考點：根（軸根/鬚根）、莖（木本/草本/輸送）、葉（葉脈/葉序/光合作用）、花的四構造、果實與種子傳播。',
+                desc: '考點：生物與非生物、根（軸根/鬚根）、莖（木本/草本/藤本/輸送）、葉（葉脈/葉序/光合作用）、花的四構造、果實與種子傳播。',
                 monsters: [
                     { id: 'm1_1', name: '迷霧藤蔓怪', role: '森林前鋒', maxHp: 60 },
                     { id: 'm1_2', name: '貪睡食人花', role: '精英守衛', maxHp: 90 },
@@ -1322,7 +1380,7 @@
                 ]
             },
             {
-                id: 1,
+                id: 1, subject: 'science', unitIdx: 1,
                 unitTitle: '第二單元：生活中的力',
                 stageName: '磁力機械遺跡',
                 badgeName: '超能磁極徽章',
@@ -1331,7 +1389,7 @@
                 themeBg: 'from-sky-200 via-indigo-100 to-rose-100',
                 cardBorder: 'border-sky-600',
                 tagColor: 'bg-sky-600',
-                desc: '考點：力的效應（形狀改變/運動狀態改變）、接觸力與非接觸力、磁鐵吸引鐵鈷鎳、磁極N/S同極相斥異極相吸。',
+                desc: '考點：力的效應（形狀改變/運動狀態改變）、接觸力與非接觸力、磁鐵吸引鐵鈷鎳、磁極N/S同極相斥異極相吸、力的三要素、浮力。',
                 monsters: [
                     { id: 'm2_1', name: '彈簧機器人', role: '遺跡前鋒', maxHp: 60 },
                     { id: 'm2_2', name: 'N極S極雙子怪', role: '精英守衛', maxHp: 90 },
@@ -1339,7 +1397,7 @@
                 ]
             },
             {
-                id: 2,
+                id: 2, subject: 'science', unitIdx: 2,
                 unitTitle: '第三單元：奇妙的空氣',
                 stageName: '微風天空之島',
                 badgeName: '蒼穹之風徽章',
@@ -1348,7 +1406,7 @@
                 themeBg: 'from-cyan-200 via-sky-100 to-indigo-100',
                 cardBorder: 'border-cyan-600',
                 tagColor: 'bg-cyan-600',
-                desc: '考點：空氣特性（無色無味、佔有空間、可被壓縮）、杯底紙巾不濕實驗、空氣流動成風、風向與風力觀測。',
+                desc: '考點：空氣特性（無色無味、佔有空間、可被壓縮）、杯底紙巾不濕實驗、空氣流動成風、風向與風力觀測、吸盤原理、空氣汙染。',
                 monsters: [
                     { id: 'm3_1', name: '隱形氣泡怪', role: '天空前鋒', maxHp: 60 },
                     { id: 'm3_2', name: '暴風羽翼獸', role: '精英守衛', maxHp: 90 },
@@ -1356,7 +1414,7 @@
                 ]
             },
             {
-                id: 3,
+                id: 3, subject: 'science', unitIdx: 3,
                 unitTitle: '第四單元：廚房裡的科學',
                 stageName: '鍊金魔法廚房',
                 badgeName: '皇家鍊金徽章',
@@ -1365,7 +1423,7 @@
                 themeBg: 'from-amber-200 via-pink-100 to-purple-100',
                 cardBorder: 'border-purple-600',
                 tagColor: 'bg-purple-600',
-                desc: '考點：調味粉末觀察、溶解現象與飽和、加速溶解方法、小蘇打加檸檬酸冒泡、紫高麗菜汁酸鹼變色。',
+                desc: '考點：調味粉末觀察、溶解現象與飽和、加速溶解方法、小蘇打加檸檬酸冒泡、紫高麗菜汁酸鹼變色、利用溶解分離物質與清潔。',
                 monsters: [
                     { id: 'm4_1', name: '泡泡麵粉怪', role: '廚房前鋒', maxHp: 60 },
                     { id: 'm4_2', name: '結晶鹽巴魔', role: '精英守衛', maxHp: 90 },
@@ -1373,7 +1431,7 @@
                 ]
             },
             {
-                id: 4,
+                id: 4, subject: 'science', isBoss: true,
                 unitTitle: '終極試煉：康軒三上自然總複習',
                 stageName: '混沌魔王神殿',
                 badgeName: '自然傳說王冠',
@@ -1388,6 +1446,65 @@
                 ]
             }
         ];
+
+        // 所有關卡（自然 0~4、社會 5~11）與題庫
+        const ALL_STAGES = KINGDOM_STAGES.concat(SOCIAL_STAGES);
+        const SUBJECTS = {
+            science: { name: '自然科學王國', icon: '🔬', bossTitle: '【終極決戰】自然王國大魔王：混沌博士', bossBtn: '挑戰混沌博士',
+                bossDesc: '集結「植物、生活中的力、奇妙的空氣、廚房裡的科學」綜合大考題，穿戴好你的最強裝備來挑戰吧！' },
+            social: { name: '社會人文王國', icon: '🏛️', bossTitle: '【終極決戰】社會王國大魔王：混亂大法官', bossBtn: '挑戰混亂大法官',
+                bossDesc: '集結「我的家庭、家庭與倫理、自治與安全、學習與成長、和諧的相處、學校與我」綜合大考題，來場終極對決吧！' }
+        };
+        let currentSubject = 'science';
+
+        function getStage(stageId) {
+            return ALL_STAGES.find(s => s.id === stageId);
+        }
+
+        function getSubjectUnitStages(subject) {
+            return ALL_STAGES.filter(s => s.subject === subject && !s.isBoss);
+        }
+
+        function getSubjectBossStage(subject = currentSubject) {
+            return ALL_STAGES.find(s => s.subject === subject && s.isBoss);
+        }
+
+        function getAllQuestions() {
+            return QUESTION_BANK.concat(SOCIAL_QUESTION_BANK);
+        }
+
+        function getStageQuestions(stageId) {
+            const stage = getStage(stageId);
+            if (stage.isBoss) {
+                const unitIds = getSubjectUnitStages(stage.subject).map(s => s.id);
+                return getAllQuestions().filter(q => unitIds.includes(q.unit));
+            }
+            return getAllQuestions().filter(q => q.unit === stageId);
+        }
+
+        function isStageCleared(stage) {
+            if (stage.isBoss) return stage.subject === 'social' ? player.socialBossCleared : player.bossCleared;
+            return stage.subject === 'social' ? player.socialBadges[stage.unitIdx] : player.badges[stage.unitIdx];
+        }
+
+        function markStageCleared(stage) {
+            if (stage.isBoss) {
+                if (stage.subject === 'social') player.socialBossCleared = true;
+                else player.bossCleared = true;
+            } else if (stage.subject === 'social') {
+                player.socialBadges[stage.unitIdx] = true;
+            } else {
+                player.badges[stage.unitIdx] = true;
+            }
+        }
+
+        function getTotalBadges() {
+            return player.badges.filter(Boolean).length + player.socialBadges.filter(Boolean).length;
+        }
+
+        function hasClearedAnyBoss() {
+            return player.bossCleared || player.socialBossCleared;
+        }
 
         // 康軒三上自然完整題庫
         const QUESTION_BANK = [
@@ -2119,6 +2236,288 @@
                 options: ['沒有溶解，有的浮在水面、有的沉在杯底', '完全溶解，水變得清澈透明', '變成食鹽', '變成氣泡飛走'],
                 ans: 0,
                 exp: '<span class="kw-highlight">胡椒粉不容易溶解</span>，攪拌後還是看得到一顆顆黑色粉末，靜置後會浮在水面或沉在杯底。'
+            },
+
+            // ================= 擴充題庫第二波（依 114 學年康軒課程計畫補充） =================
+            {
+                id: 'u1_q30', unit: 0, topic: '生物與非生物',
+                q: '下列哪一組「全部」都是生物？',
+                options: ['榕樹、小狗、蝴蝶', '石頭、小狗、雲', '玩具熊、榕樹、水', '鉛筆、蝴蝶、空氣'],
+                ans: 0,
+                exp: '會<span class="kw-highlight">生長、需要養分和水、能繁殖</span>的是生物，例如植物和動物；石頭、水、雲、空氣、玩具都是<span class="kw-highlight">非生物</span>。'
+            },
+            {
+                id: 'u1_q31', unit: 0, topic: '植物的身體',
+                q: '大部分的開花植物，身體可以分成哪六個部位？',
+                options: ['根、莖、葉、花、果實、種子', '頭、身體、手、腳、尾巴、翅膀', '根、莖、葉、花、羽毛、鱗片', '花瓣、花萼、雄蕊、雌蕊、根、殼'],
+                ans: 0,
+                exp: '開花植物的身體大部分可分成<span class="kw-highlight">根、莖、葉、花、果實和種子</span>六個部位，每個部位都有不同的功能。'
+            },
+            {
+                id: 'u1_q32', unit: 0, topic: '莖的種類（藤本莖）',
+                q: '「牽牛花、絲瓜、葡萄」的莖細長柔軟，需要纏繞或攀附在其他物體上才能往上長，這種莖叫做什麼？',
+                options: ['藤本莖', '木本莖', '草本莖', '地下莖'],
+                ans: 0,
+                exp: '莖可以分成三種：堅硬粗大的<span class="kw-highlight">木本莖</span>（榕樹）、柔軟較細的<span class="kw-highlight">草本莖</span>（鳳仙花），以及需要攀爬纏繞的<span class="kw-highlight">藤本莖</span>（牽牛花、絲瓜）。'
+            },
+            {
+                id: 'u1_q33', unit: 0, topic: '莖的功能（攀爬）',
+                q: '藤本植物的莖彎曲攀爬往上長，最主要是為了什麼？',
+                options: ['讓葉子獲取更多陽光', '躲避下雨', '讓根長得更長', '讓花朵變成果實'],
+                ans: 0,
+                exp: '藤本植物的莖無法自己直立，藉由<span class="kw-highlight">攀爬向上</span>生長，可以讓葉子<span class="kw-highlight">照到更多陽光</span>來製造養分！'
+            },
+            {
+                id: 'u1_q34', unit: 0, topic: '根吸收水分',
+                q: '把一株植物的根泡在裝水的瓶子裡，瓶口用黏土封住，幾天後發現水位下降了，這證明了什麼？',
+                options: ['植物的根會吸收水分', '水被瓶子吃掉了', '植物不需要水', '黏土會吸水'],
+                ans: 0,
+                exp: '瓶口封住水不會從瓶口蒸發，水位下降是因為<span class="kw-highlight">根把水吸收</span>進植物體內，證明植物所需的水分是<span class="kw-highlight">由根部吸收</span>的！'
+            },
+            {
+                id: 'u1_q35', unit: 0, topic: '不同季節的花',
+                q: '校園裡春天開杜鵑花、夏天開鳳凰花、秋冬開其他花，這說明了什麼？',
+                options: ['不同的植物會在不同的季節開花', '所有植物都在同一天開花', '花只會在夏天開', '植物開花和季節沒有關係'],
+                ans: 0,
+                exp: '不同植物有不同的開花季節，例如<span class="kw-highlight">春天的杜鵑花</span>、<span class="kw-highlight">夏天的鳳凰花</span>，一年四季都能欣賞到不同的花喔！'
+            },
+            {
+                id: 'u1_q36', unit: 0, topic: '果實與種子',
+                q: '切開蘋果、番茄、木瓜，會發現裡面都有什麼？',
+                options: ['種子', '根', '花萼', '石頭'],
+                ans: 0,
+                exp: '<span class="kw-highlight">果實裡面有種子</span>！果實可以保護種子，並幫助種子傳播到其他地方長成新的植物。'
+            },
+            {
+                id: 'u1_q37', unit: 0, topic: '果實的功能',
+                q: '不同植物的果實外形、大小、顏色都不一樣，但它們都有一個共同的功能，是什麼？',
+                options: ['保護種子並幫助傳播種子', '幫植物吸收水分', '幫植物行光合作用', '把植物固定在土裡'],
+                ans: 0,
+                exp: '雖然果實長得各不相同，但都能<span class="kw-highlight">保護種子</span>，並用風、水、動物或彈力等方式<span class="kw-highlight">幫助種子傳播</span>！'
+            },
+            {
+                id: 'u1_q38', unit: 0, topic: '植物與生活',
+                q: '我們吃的「高麗菜」主要是植物的哪一個部位？',
+                options: ['葉', '根', '果實', '種子'],
+                ans: 0,
+                exp: '<span class="kw-highlight">高麗菜、菠菜、空心菜</span>主要吃的是葉；<span class="kw-highlight">蘿蔔、地瓜</span>吃的是根；<span class="kw-highlight">番茄、蘋果</span>吃的是果實。植物和我們的生活關係很密切！'
+            },
+            {
+                id: 'u1_q39', unit: 0, topic: '愛護植物',
+                q: '到公園觀察植物時，下列哪一個行為是正確的？',
+                options: ['用眼睛和放大鏡觀察，不任意摘花折枝', '把喜歡的花全部摘回家', '踩進花圃裡近距離看', '隨便嚐嚐看葉子的味道'],
+                ans: 0,
+                exp: '觀察植物要<span class="kw-highlight">尊重生命、愛護植物</span>，不任意摘取或踐踏；不認識的植物也<span class="kw-highlight">不可以亂嚐</span>，有些可能有毒喔！'
+            },
+            {
+                id: 'u2_q26', unit: 1, topic: '力的表示法（三要素）',
+                q: '我們用「箭頭」來表示力時，箭頭可以表示出力的哪些要素？',
+                options: ['力的大小、方向和作用點', '力的顏色和味道', '力的溫度', '力的重量和價錢'],
+                ans: 0,
+                exp: '力可以用箭頭表示：<span class="kw-highlight">箭頭長短</span>表示力的大小、<span class="kw-highlight">箭頭指的方向</span>表示力的方向、<span class="kw-highlight">箭頭起點</span>表示施力的位置（作用點）。'
+            },
+            {
+                id: 'u2_q27', unit: 1, topic: '力的大小與箭頭',
+                q: '甲、乙兩個箭頭都表示推車子的力，甲的箭頭比較長，這代表什麼？',
+                options: ['甲的推力比較大', '乙的推力比較大', '甲、乙推力一樣大', '甲的力方向相反'],
+                ans: 0,
+                exp: '用箭頭表示力時，<span class="kw-highlight">箭頭越長，代表力越大</span>！'
+            },
+            {
+                id: 'u2_q28', unit: 1, topic: '形狀改變能否恢復',
+                q: '下列哪一種物品受力變形後，放手會「恢復原狀」？',
+                options: ['拉長的橡皮筋', '捏扁的黏土', '踩扁的鋁罐', '揉皺的紙'],
+                ans: 0,
+                exp: '物體受力變形後，<span class="kw-highlight">有的可以恢復原狀</span>（橡皮筋、海綿、彈簧），<span class="kw-highlight">有的不能恢復</span>（黏土、鋁罐、揉皺的紙）。'
+            },
+            {
+                id: 'u2_q29', unit: 1, topic: '浮力',
+                q: '把一顆皮球壓進水中，會感覺到有一股力量把球往上推，這股力量叫做什麼？',
+                options: ['浮力', '磁力', '重力', '摩擦力'],
+                ans: 0,
+                exp: '在水中的物體會受到水<span class="kw-highlight">向上推的力</span>，叫做<span class="kw-highlight">浮力</span>。游泳時覺得身體變輕，也是因為浮力喔！'
+            },
+            {
+                id: 'u2_q30', unit: 1, topic: '改變形狀影響浮沉',
+                q: '一團黏土丟進水裡會沉下去，但把同一團黏土捏成「小船的形狀」後卻能浮起來，這是為什麼？',
+                options: ['改變形狀後受到的浮力變大了', '黏土變輕了', '水變少了', '黏土變成了木頭'],
+                ans: 0,
+                exp: '黏土的重量沒變，但捏成船形後排開的水變多，<span class="kw-highlight">受到的浮力變大</span>，所以能浮起來。<span class="kw-highlight">改變物體形狀會改變浮力</span>，影響浮沉！'
+            },
+            {
+                id: 'u2_q31', unit: 1, topic: '水可以傳送動力',
+                q: '以前的人利用流動的河水推動「水車」轉動來舂米，這說明了水有什麼作用？',
+                options: ['流動的水可以推動物品、傳送動力', '水可以吸引鐵', '水會讓物體變輕', '水會發光'],
+                ans: 0,
+                exp: '流動的<span class="kw-highlight">水可以推動物品</span>，例如水車、漂流的落葉；水和空氣都可以<span class="kw-highlight">傳送動力</span>讓物體移動。'
+            },
+            {
+                id: 'u2_q32', unit: 1, topic: '防盜磁扣',
+                q: '服飾店的衣服上常掛著「防盜扣」，結帳時店員用一個工具一靠近就能拿下來，這主要利用了什麼原理？',
+                options: ['磁力', '浮力', '風力', '彈力'],
+                ans: 0,
+                exp: '防盜扣裡面有鐵製的零件卡住，店員用<span class="kw-highlight">強力磁鐵</span>吸開裡面的零件就能取下，這是<span class="kw-highlight">磁鐵在生活中的應用</span>。'
+            },
+            {
+                id: 'u2_q33', unit: 1, topic: '力的作用點',
+                q: '推門的時候，推在「離門軸最遠的門把附近」最省力，這說明力的哪一個要素會影響效果？',
+                options: ['作用點（施力的位置）', '力的顏色', '門的顏色', '推門的時間'],
+                ans: 0,
+                exp: '同樣大小的力，<span class="kw-highlight">施力的位置（作用點）</span>不同，效果也不同。推門時推在門把附近，比推在門軸旁邊容易多了！'
+            },
+            {
+                id: 'u2_q34', unit: 1, topic: '力的方向',
+                q: '用同樣大小的力踢球，往左踢球往左滾、往右踢球往右滾，這說明什麼？',
+                options: ['施力的方向不同，物體運動的方向也不同', '力的方向和運動無關', '球只會往左滾', '踢球不需要用力'],
+                ans: 0,
+                exp: '物體<span class="kw-highlight">受力的方向不同</span>，運動的方向也會跟著改變，所以力有「<span class="kw-highlight">方向</span>」這個要素。'
+            },
+            {
+                id: 'u2_q35', unit: 1, topic: '生活中的力',
+                q: '下列哪一個例子是利用「彈力」？',
+                options: ['用彈弓把紙團彈出去', '磁鐵吸住迴紋針', '船浮在水面上', '蘋果從樹上掉下來'],
+                ans: 0,
+                exp: '橡皮筋、彈簧被拉長或壓縮後想恢復原狀產生的力是<span class="kw-highlight">彈力</span>，彈弓、彈簧床都利用了彈力。'
+            },
+            {
+                id: 'u3_q25', unit: 2, topic: '空氣無所不在',
+                q: '捏住一個「看起來空空的」塑膠袋口放進水中，再鬆開袋口，會看到什麼？這證明了什麼？',
+                options: ['冒出氣泡；證明袋子裡有空氣', '什麼都沒發生；證明袋子裡沒東西', '袋子變成石頭', '水變成紅色'],
+                ans: 0,
+                exp: '鬆開袋口後冒出<span class="kw-highlight">氣泡</span>，證明看起來空空的袋子裡其實裝滿了空氣，<span class="kw-highlight">空氣無所不在</span>！'
+            },
+            {
+                id: 'u3_q26', unit: 2, topic: '空氣流動形成風',
+                q: '用手按壓裝滿空氣的塑膠袋，把袋口對著臉，會感覺到涼涼的風，這說明風是怎麼形成的？',
+                options: ['空氣流動形成風', '塑膠袋會製造冷氣', '手的溫度很低', '風是從水裡來的'],
+                ans: 0,
+                exp: '按壓袋子讓<span class="kw-highlight">空氣流動</span>，就形成了<span class="kw-highlight">風</span>；空氣流動得越快，風就越大！'
+            },
+            {
+                id: 'u3_q27', unit: 2, topic: '風的大小',
+                q: '在電風扇前面，頭髮和紙條「飄得越高」，代表什麼？',
+                options: ['風越大，空氣流動越快', '風越小', '沒有風', '空氣不見了'],
+                ans: 0,
+                exp: '頭髮、旗子<span class="kw-highlight">飄得越高</span>、風車<span class="kw-highlight">轉得越快</span>，都表示<span class="kw-highlight">風越大</span>，空氣流動也越快。'
+            },
+            {
+                id: 'u3_q28', unit: 2, topic: '吸盤的原理',
+                q: '把吸盤用力壓在光滑的瓷磚上，它就會牢牢吸住，這是因為什麼？',
+                options: ['壓吸盤時把裡面的空氣擠出去，外面的空氣把吸盤壓在牆上', '吸盤上有膠水', '吸盤有磁性', '瓷磚會吸東西'],
+                ans: 0,
+                exp: '用力壓吸盤會<span class="kw-highlight">把吸盤內的空氣擠出去</span>，這時外面的<span class="kw-highlight">空氣把吸盤緊緊壓住</span>，所以吸盤能吸在光滑的表面上。'
+            },
+            {
+                id: 'u3_q29', unit: 2, topic: '空氣汙染',
+                q: '下列哪一種行為「會」造成空氣汙染？',
+                options: ['在戶外燃燒垃圾', '騎腳踏車上學', '在家裡種植盆栽', '搭乘捷運出門'],
+                ans: 0,
+                exp: '<span class="kw-highlight">燃燒垃圾、汽機車廢氣、工廠排放的廢氣</span>都會造成空氣汙染；騎腳踏車、搭大眾運輸則能減少汙染。'
+            },
+            {
+                id: 'u3_q30', unit: 2, topic: '空氣品質指標',
+                q: '環境部發布的空氣品質指標（AQI）顯示「紅色」等級（對所有族群不健康）時，我們應該怎麼做？',
+                options: ['減少戶外活動，外出時戴口罩', '去操場跑步運動', '把窗戶全部打開', '不用理會'],
+                ans: 0,
+                exp: '空氣品質指標用顏色分級，<span class="kw-highlight">綠色</span>表示良好；出現<span class="kw-highlight">紅色、紫色</span>時空氣很差，要<span class="kw-highlight">減少戶外活動、外出戴口罩</span>。'
+            },
+            {
+                id: 'u3_q31', unit: 2, topic: '維護空氣品質',
+                q: '下列哪一種做法可以幫助「減少空氣汙染」？',
+                options: ['多搭乘大眾運輸工具或走路', '讓汽車停著時一直不熄火', '常常燃燒落葉', '大量使用一次性塑膠製品並燒掉'],
+                ans: 0,
+                exp: '多<span class="kw-highlight">走路、騎腳踏車、搭大眾運輸</span>，停車時熄火、不燃燒垃圾和落葉，都能為乾淨空氣盡一份心力！'
+            },
+            {
+                id: 'u3_q32', unit: 2, topic: '空氣的用途',
+                q: '除了讓生物呼吸之外，下列哪一個也是空氣的用途？',
+                options: ['燃燒時需要空氣，蠟燭火焰才能持續燃燒', '空氣可以讓石頭變成金子', '空氣可以吸引鐵釘', '空氣可以讓水變成糖'],
+                ans: 0,
+                exp: '空氣的用途很多：<span class="kw-highlight">生物呼吸、物質燃燒</span>都需要空氣，還能<span class="kw-highlight">充氣</span>（輪胎、氣球）和<span class="kw-highlight">產生風力</span>。'
+            },
+            {
+                id: 'u3_q33', unit: 2, topic: '空氣可以傳送動力',
+                q: '把吹飽的氣球套在玩具車上，放開氣球口後車子往前跑，這是利用什麼？',
+                options: ['空氣從氣球噴出，推動車子前進', '車子裡有電池', '磁鐵吸引車子', '地板是斜的'],
+                ans: 0,
+                exp: '空氣從氣球口<span class="kw-highlight">快速噴出</span>，產生推力讓車子前進，這說明<span class="kw-highlight">空氣可以傳送動力</span>讓物體移動！'
+            },
+            {
+                id: 'u3_q34', unit: 2, topic: '空氣可以被壓縮',
+                q: '用注射筒做實驗，下列哪一個敘述是正確的？',
+                options: ['裝空氣的注射筒活塞壓得下去，放手會彈回', '裝水的注射筒活塞很容易壓到底', '裝空氣的注射筒完全壓不下去', '空氣和水一樣都不能被壓縮'],
+                ans: 0,
+                exp: '<span class="kw-highlight">空氣可以被壓縮</span>，壓下活塞後放手會<span class="kw-highlight">彈回</span>；<span class="kw-highlight">水幾乎不能被壓縮</span>，所以很難壓下去。'
+            },
+            {
+                id: 'u4_q25', unit: 3, topic: '水溶液的酸鹼',
+                q: '水溶液依照性質，可以分成哪三類？',
+                options: ['酸性、中性、鹼性', '甜性、鹹性、苦性', '冷性、熱性、溫性', '紅性、藍性、紫性'],
+                ans: 0,
+                exp: '水溶液可以分成<span class="kw-highlight">酸性</span>（白醋、檸檬汁）、<span class="kw-highlight">中性</span>（食鹽水、糖水）和<span class="kw-highlight">鹼性</span>（小蘇打水、肥皂水）三類。'
+            },
+            {
+                id: 'u4_q26', unit: 3, topic: '判斷酸鹼的方法',
+                q: '想知道一杯透明液體是酸性還是鹼性，最安全又準確的方法是什麼？',
+                options: ['滴入紫色高麗菜汁觀察顏色變化', '直接喝一口嚐味道', '把手指伸進去摸', '湊近用力聞'],
+                ans: 0,
+                exp: '用感官<span class="kw-highlight">無法準確判斷</span>酸鹼，而且亂嚐亂摸很危險！可以用<span class="kw-highlight">紫色高麗菜汁</span>等指示劑，看顏色變化來判斷。'
+            },
+            {
+                id: 'u4_q27', unit: 3, topic: '利用溶解分離物質',
+                q: '沙子和食鹽不小心混在一起，下列哪一個方法可以把它們分開？',
+                options: ['加水攪拌讓食鹽溶解，過濾出沙子，再把鹽水晒乾', '用磁鐵把食鹽吸出來', '用手一粒一粒挑出來是唯一的方法', '放進冰箱冷凍'],
+                ans: 0,
+                exp: '利用「<span class="kw-highlight">食鹽會溶解、沙子不會溶解</span>」的特性：加水攪拌 ➔ <span class="kw-highlight">過濾</span>留下沙子 ➔ 把鹽水<span class="kw-highlight">晒乾</span>就能得到食鹽！'
+            },
+            {
+                id: 'u4_q28', unit: 3, topic: '水溫與溶解量',
+                q: '同樣 100 毫升的水，「熱水」和「冷水」比較，哪一杯能溶解比較多的砂糖？',
+                options: ['熱水', '冷水', '一樣多', '兩杯都不能溶解砂糖'],
+                ans: 0,
+                exp: '<span class="kw-highlight">提高水溫</span>，不只能溶解得更快，還能<span class="kw-highlight">溶解更多</span>的砂糖喔！'
+            },
+            {
+                id: 'u4_q29', unit: 3, topic: '幫助清潔的材料',
+                q: '盤子上沾了油，只用清水很難洗乾淨，可以加入什麼幫助清潔？',
+                options: ['洗碗精或肥皂', '砂糖', '麵粉', '更多的油'],
+                ans: 0,
+                exp: '<span class="kw-highlight">水無法清潔所有物質</span>，像油汙就需要<span class="kw-highlight">洗碗精、肥皂</span>幫忙才容易洗掉。'
+            },
+            {
+                id: 'u4_q30', unit: 3, topic: '幫助清潔的材料',
+                q: '熱水壺底部長了一層白白的「水垢」，用下列哪一種材料浸泡最容易清除？',
+                options: ['檸檬酸水溶液', '食鹽水', '糖水', '麵粉水'],
+                ans: 0,
+                exp: '<span class="kw-highlight">檸檬酸</span>是酸性物質，可以溶解熱水壺裡的<span class="kw-highlight">水垢</span>，是廚房裡常用的天然清潔幫手！'
+            },
+            {
+                id: 'u4_q31', unit: 3, topic: '用感官辨認材料',
+                q: '不能用嚐的情況下，要分辨「白醋」和「清水」，下列哪一種感官最適合？',
+                options: ['用手搧聞氣味', '用耳朵聽', '直接喝下去', '用舌頭舔'],
+                ans: 0,
+                exp: '白醋有<span class="kw-highlight">酸酸的氣味</span>，可以用「<span class="kw-highlight">搧聞法</span>」（用手把氣味搧向鼻子）安全地分辨，不要直接湊近猛聞或品嚐喔！'
+            },
+            {
+                id: 'u4_q32', unit: 3, topic: '辨認廚房材料',
+                q: '有兩杯看起來一樣的白色粉末（食鹽和太白粉），加水攪拌後，哪一杯會變混濁？',
+                options: ['太白粉', '食鹽', '兩杯都清澈', '兩杯都會變紅'],
+                ans: 0,
+                exp: '利用「<span class="kw-highlight">是否溶於水</span>」來辨認：食鹽溶解後水是透明的；<span class="kw-highlight">太白粉不易溶解</span>，水會變混濁並沉澱。'
+            },
+            {
+                id: 'u4_q33', unit: 3, topic: '溶解的定義',
+                q: '把紅茶包泡進熱水，水變成均勻透明的紅褐色，沒有沉澱，這可以算是溶解嗎？',
+                options: ['可以，溶解後的水溶液可以有顏色，只要均勻透明', '不行，溶解後一定要是無色的', '不行，因為有顏色就是沉澱', '不行，熱水不能溶解東西'],
+                ans: 0,
+                exp: '溶解的判斷是<span class="kw-highlight">均勻、透明、沒有沉澱</span>；<span class="kw-highlight">透明不等於無色</span>，有顏色的水溶液也可以是溶解喔！'
+            },
+            {
+                id: 'u4_q34', unit: 3, topic: '酸鹼與生活',
+                q: '下列哪一種是「鹼性」的物質？',
+                options: ['小蘇打水', '檸檬汁', '白醋', '柳橙汁'],
+                ans: 0,
+                exp: '<span class="kw-highlight">小蘇打水、肥皂水</span>是鹼性；<span class="kw-highlight">檸檬汁、白醋、柳橙汁</span>是酸性；食鹽水、糖水是中性。'
             }
         ];
 
@@ -2246,7 +2645,11 @@
                 learnedSkills: ['normal', 'double', 'heal'],
                 classPath: null,
                 classTier: 0,
+                classCorrect: 0,
+                masteredClasses: [],
                 badges: [false, false, false, false],
+                socialBadges: [false, false, false, false, false, false],
+                socialBossCleared: false,
                 bossCleared: false,
                 mistakes: []
             };
@@ -2271,6 +2674,8 @@
                     player = { ...getDefaultPlayer(), ...parsed };
                     player.inventory = { ...getDefaultPlayer().inventory, ...(parsed.inventory || {}) };
                     if (!Array.isArray(player.learnedSkills)) player.learnedSkills = getDefaultPlayer().learnedSkills;
+                    if (!Array.isArray(player.socialBadges)) player.socialBadges = getDefaultPlayer().socialBadges;
+                    if (!Array.isArray(player.masteredClasses)) player.masteredClasses = [];
                     return true;
                 }
             } catch (e) {
@@ -2357,7 +2762,6 @@
                 document.getElementById('resetSaveBtn').classList.remove('hidden');
             }
             renderStartScreen();
-            document.getElementById('finalBossIconPreview').innerHTML = getMonsterSvg('m5_1');
         };
 
         function renderStartScreen() {
@@ -2417,8 +2821,7 @@
             document.getElementById('hudAtk').textContent = getHeroAtk();
             document.getElementById('hudGold').textContent = player.gold;
 
-            const badgeCount = player.badges.filter(Boolean).length;
-            document.getElementById('hudBadges').textContent = badgeCount;
+            document.getElementById('hudBadges').textContent = getTotalBadges();
 
             // 同步更新地圖大本營的紙娃娃與裝備數據
             const mapHeroEl = document.getElementById('mapHeroPreview');
@@ -2719,18 +3122,12 @@
                     </div>
                 </div>`;
             } else if (currentShopTab === 'class') {
-                const badgeCount = player.badges.filter(Boolean).length;
                 const next = CLASS_ADVANCE_REQS.find(r => r.tier === player.classTier + 1);
                 const info = getClassInfo();
 
                 let reqHtml = '';
                 if (next) {
-                    const checks = [
-                        { ok: player.lv >= next.lv, text: `勇者等級達到 Lv.${next.lv}（目前 Lv.${player.lv}）` },
-                        { ok: badgeCount >= next.badges, text: `取得 ${next.badges} 枚單元徽章（目前 ${badgeCount} 枚）` }
-                    ];
-                    if (next.boss) checks.push({ ok: player.bossCleared, text: '擊敗最終大魔王「混沌博士」' });
-                    checks.push({ ok: player.gold >= next.price, text: `轉職費用 ${next.price} 金幣（目前 ${player.gold}）` });
+                    const checks = getAdvanceChecks(next);
                     reqHtml = `
                     <div class="storybook-panel p-3 bg-white">
                         <h4 class="font-black text-sm text-amber-950 mb-1.5">🎯 ${next.label}條件：</h4>
@@ -2766,10 +3163,19 @@
                     <div class="storybook-panel p-3 bg-gradient-to-r from-amber-100 to-fuchsia-100">
                         <div class="text-xs font-bold text-amber-800">目前職業</div>
                         <div class="text-lg font-black text-amber-950">${getClassTitle()}</div>
-                        ${info ? '' : '<p class="text-xs font-bold text-amber-900 mt-1">達成條件後可以選擇一條職業路線（選定後就不能更換喔，好好想想！）</p>'}
+                        ${info ? '' : '<p class="text-xs font-bold text-amber-900 mt-1">達成條件後可以選擇一條職業路線。之後也能花金幣轉換成其他職業，但要從一轉重新開始喔！</p>'}
+                        ${player.masteredClasses.length ? `<p class="text-xs font-bold text-fuchsia-800 mt-1">🏅 已精通（完成三轉）的職業：${player.masteredClasses.map(id => { const c = CLASS_TREE.find(t => t.id === id); return c ? c.icon + c.name : ''; }).join('、')}</p>` : ''}
                     </div>
                     ${reqHtml}
-                    <div class="grid grid-cols-1 ${paths.length > 1 ? 'md:grid-cols-3' : ''} gap-3">${pathCards}</div>
+                    <div class="grid grid-cols-1 ${paths.length > 1 ? 'sm:grid-cols-2 lg:grid-cols-3' : ''} gap-3">${pathCards}</div>
+                    ${info ? `
+                    <div class="storybook-panel p-3 bg-stone-50">
+                        <h4 class="font-black text-sm text-amber-950 mb-1">🔄 轉換職業</h4>
+                        <p class="text-xs text-amber-800 font-medium mb-2">想體驗其他職業嗎？轉換後會回到「見習勇者」，需要重新一轉、二轉、三轉；目前職業的專屬技能會暫時封印，之後轉回來可以再學會。</p>
+                        <button onclick="switchClass()" class="rpg-btn w-full sm:w-auto bg-stone-600 hover:bg-stone-500 text-white font-black py-2 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-coins text-yellow-300"></i> 花費 ${CLASS_SWITCH_PRICE} 金幣轉換職業
+                        </button>
+                    </div>` : ''}
                 </div>`;
             }
         }
@@ -2796,18 +3202,57 @@
             updateTopHud();
         }
 
+        function getAdvanceChecks(next) {
+            const badgeCount = getTotalBadges();
+            const checks = [
+                { ok: player.lv >= next.lv, text: `勇者等級達到 Lv.${next.lv}（目前 Lv.${player.lv}）`, short: `等級 Lv.${next.lv}` },
+                { ok: badgeCount >= next.badges, text: `取得 ${next.badges} 枚單元徽章，自然、社會都算（目前 ${badgeCount} 枚）`, short: `${next.badges} 枚徽章` }
+            ];
+            if (next.classCorrect) {
+                checks.push({ ok: player.classCorrect >= next.classCorrect, text: `以目前職業答對 ${next.classCorrect} 題（目前 ${Math.min(player.classCorrect, next.classCorrect)} 題）`, short: `再答對 ${next.classCorrect - player.classCorrect} 題` });
+            }
+            if (next.boss) checks.push({ ok: hasClearedAnyBoss(), text: '擊敗任一科目的最終大魔王（混沌博士或混亂大法官）', short: '擊敗最終大魔王' });
+            checks.push({ ok: player.gold >= next.price, text: `轉職費用 ${next.price} 金幣（目前 ${player.gold}）`, short: `${next.price} 金幣` });
+            return checks;
+        }
+
+        function switchClass() {
+            const info = getClassInfo();
+            if (!info) return;
+            if (player.gold < CLASS_SWITCH_PRICE) {
+                playSfx('wrong');
+                setShopFeedback(`⚠️ 金幣不足！轉換職業需要 ${CLASS_SWITCH_PRICE} 金幣喔！`, true);
+                return;
+            }
+            if (!window.confirm(`確定要放棄「${info.tierData.name}」，花費 ${CLASS_SWITCH_PRICE} 金幣回到見習勇者嗎？
+轉換後需要重新一轉、二轉、三轉喔！`)) return;
+
+            playSfx('upgrade');
+            player.gold -= CLASS_SWITCH_PRICE;
+            const oldName = info.tierData.name;
+            player.learnedSkills = player.learnedSkills.filter(id => {
+                const sk = SKILL_CATALOG.find(s => s.id === id);
+                return sk && !sk.classId;
+            });
+            player.classPath = null;
+            player.classTier = 0;
+            player.classCorrect = 0;
+            if (!player.learnedSkills.includes(battleState.selectedSkill)) battleState.selectedSkill = 'normal';
+            player.hp = Math.min(player.hp, getHeroMaxHp());
+            player.mp = Math.min(player.mp, getHeroMaxMp());
+            setShopFeedback(`🔄 已離開【${oldName}】，回到見習勇者！現在可以選擇新的職業路線進行一轉囉！`);
+            savePlayerProgress();
+            refreshShopUI();
+            updateTopHud();
+        }
+
         function advanceClass(pathId) {
             const next = CLASS_ADVANCE_REQS.find(r => r.tier === player.classTier + 1);
             const path = CLASS_TREE.find(c => c.id === pathId);
             if (!next || !path) return;
             if (player.classPath && player.classPath !== pathId) return;
 
-            const badgeCount = player.badges.filter(Boolean).length;
-            const missing = [];
-            if (player.lv < next.lv) missing.push(`等級 Lv.${next.lv}`);
-            if (badgeCount < next.badges) missing.push(`${next.badges} 枚徽章`);
-            if (next.boss && !player.bossCleared) missing.push('擊敗混沌博士');
-            if (player.gold < next.price) missing.push(`${next.price} 金幣`);
+            const missing = getAdvanceChecks(next).filter(c => !c.ok).map(c => c.short);
             if (missing.length) {
                 playSfx('wrong');
                 setShopFeedback(`⚠️ ${next.label}條件還沒達成：需要 ${missing.join('、')}！`, true);
@@ -2818,6 +3263,8 @@
             player.gold -= next.price;
             player.classPath = pathId;
             player.classTier = next.tier;
+            player.classCorrect = 0;
+            if (next.tier === 3 && !player.masteredClasses.includes(pathId)) player.masteredClasses.push(pathId);
             const skill = SKILL_CATALOG.find(s => s.classId === pathId && s.tier === next.tier);
             if (skill && !player.learnedSkills.includes(skill.id)) player.learnedSkills.push(skill.id);
             player.hp = getHeroMaxHp();
@@ -2954,12 +3401,33 @@
             updateTopHud();
         }
 
+        function switchSubject(subject) {
+            playSfx('select');
+            currentSubject = subject;
+            renderKingdomStages();
+        }
+
         function renderKingdomStages() {
+            ['science', 'social'].forEach(sub => {
+                document.getElementById(`subjectTab_${sub}`).className = sub === currentSubject
+                    ? 'rpg-btn bg-gradient-to-b from-amber-400 to-orange-500 text-white font-black py-2.5 rounded-xl text-sm sm:text-base ring-4 ring-amber-300'
+                    : 'rpg-btn bg-amber-100 hover:bg-amber-200 text-amber-900 font-black py-2.5 rounded-xl text-sm sm:text-base';
+            });
+
+            const subjectInfo = SUBJECTS[currentSubject];
+            const boss = getSubjectBossStage();
+            document.getElementById('finalBossIconPreview').innerHTML = getMonsterSvg(boss.monsters[0].id);
+            document.getElementById('finalBossTitle').textContent = subjectInfo.bossTitle;
+            document.getElementById('finalBossDesc').textContent = subjectInfo.bossDesc;
+            document.getElementById('finalBossReward').textContent = `🎁 過關賞金 +${boss.clearRewardGold} 金幣`;
+            document.getElementById('finalBossBtnText').textContent = subjectInfo.bossBtn;
+            document.getElementById('stageGridTitle').textContent = `選擇${subjectInfo.name}試煉關卡（過關可領取高額賞金寶箱！）`;
+
             const grid = document.getElementById('kingdomStagesGrid');
-            const mainStages = KINGDOM_STAGES.slice(0, 4);
+            const mainStages = getSubjectUnitStages(currentSubject);
 
             grid.innerHTML = mainStages.map((s, idx) => {
-                const cleared = player.badges[idx];
+                const cleared = isStageCleared(s);
                 return `
                 <div class="storybook-panel p-4 flex flex-col justify-between bg-gradient-to-br ${s.themeBg} ${s.cardBorder}">
                     <div>
@@ -2988,7 +3456,7 @@
                                 : `<i class="fa-solid fa-dragon mr-1"></i>首領：${s.monsters[2].name}`
                             }
                         </span>
-                        <button onclick="startStage(${idx})" class="rpg-btn ${s.tagColor} text-white font-black px-4 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-1.5">
+                        <button onclick="startStage(${s.id})" class="rpg-btn ${s.tagColor} text-white font-black px-4 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-1.5">
                             <i class="fa-solid fa-swords"></i>
                             <span>${cleared ? '再次刷金幣' : '進入試煉'}</span>
                         </button>
@@ -3035,11 +3503,7 @@
                 player.mp = getHeroMaxMp();
             }
 
-            if (stageId === 4) {
-                battleState.questionPool = shuffleArray(QUESTION_BANK);
-            } else {
-                battleState.questionPool = shuffleArray(QUESTION_BANK.filter(q => q.unit === stageId));
-            }
+            battleState.questionPool = shuffleArray(getStageQuestions(stageId));
 
             document.getElementById('screenMap').classList.add('hidden');
             document.getElementById('screenBattle').classList.remove('hidden');
@@ -3058,7 +3522,7 @@
             battleState.shieldActive = false;
             battleState.streak = 0;
 
-            const mistakeQuestions = QUESTION_BANK.filter(q => player.mistakes.includes(q.id));
+            const mistakeQuestions = getAllQuestions().filter(q => player.mistakes.includes(q.id));
             battleState.questionPool = shuffleArray(mistakeQuestions);
 
             battleState.monster = {
@@ -3084,7 +3548,7 @@
         }
 
         function setupWaveMonster() {
-            const stage = KINGDOM_STAGES[battleState.stageId];
+            const stage = getStage(battleState.stageId);
             const monsterObj = stage.monsters[battleState.waveIdx];
             battleState.monster = monsterObj;
             battleState.monsterHp = monsterObj.maxHp;
@@ -3293,12 +3757,10 @@
 
             if (battleState.questionPool.length === 0) {
                 if (battleState.isMistakeMode) {
-                    const mistakeQuestions = QUESTION_BANK.filter(q => player.mistakes.includes(q.id));
-                    battleState.questionPool = shuffleArray(mistakeQuestions.length ? mistakeQuestions : QUESTION_BANK);
-                } else if (battleState.stageId === 4) {
-                    battleState.questionPool = shuffleArray(QUESTION_BANK);
+                    const mistakeQuestions = getAllQuestions().filter(q => player.mistakes.includes(q.id));
+                    battleState.questionPool = shuffleArray(mistakeQuestions.length ? mistakeQuestions : getAllQuestions());
                 } else {
-                    battleState.questionPool = shuffleArray(QUESTION_BANK.filter(q => q.unit === battleState.stageId));
+                    battleState.questionPool = shuffleArray(getStageQuestions(battleState.stageId));
                 }
             }
 
@@ -3327,6 +3789,123 @@
                     <span class="flex-1">${opt}</span>
                 </button>
             `).join('');
+        }
+
+        /* ---------- 技能攻擊特效（Web Animations API，畫在戰鬥舞台上） ---------- */
+        // 步驟類型：proj 從勇者飛向魔物、fall 從天而降、burst 在魔物身上爆開、ring 衝擊波、
+        // slash 斬擊線、pillar 光柱、self 勇者身上浮現、back 從魔物飛回勇者（金幣/回復）、
+        // arrow 水平飛箭、rain 箭雨。回傳命中時間（毫秒），傷害數字會在命中時才跳出
+        function playSkillFx(skill) {
+            const steps = skill.fx || [];
+            const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!steps.length || reduceMotion || !Element.prototype.animate) return 0;
+
+            const arena = document.getElementById('battleArena');
+            const a = arena.getBoundingClientRect();
+            const h = document.getElementById('battleHeroSprite').getBoundingClientRect();
+            const m = document.getElementById('battleMonsterSprite').getBoundingClientRect();
+            const hero = { x: h.left - a.left + h.width / 2, y: h.top - a.top + h.height / 2 };
+            const mon = { x: m.left - a.left + m.width / 2, y: m.top - a.top + m.height / 2 };
+
+            const spawn = (html, x, y, style = '') => {
+                const el = document.createElement('div');
+                el.className = 'fx-item';
+                el.style.cssText = `left:${x}px;top:${y}px;${style}`;
+                el.innerHTML = html;
+                arena.appendChild(el);
+                return el;
+            };
+            const run = (el, frames, opts) => {
+                const anim = el.animate(frames, { fill: 'both', ...opts });
+                anim.onfinish = () => el.remove();
+                // 分頁在背景時動畫可能不會觸發 onfinish，用計時器保底清除
+                setTimeout(() => el.remove(), opts.delay + opts.duration + 200);
+            };
+            const tr = (dx, dy, extra = '') => `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) ${extra}`;
+            const arrowSvg = (c) => `<svg width="58" height="16" viewBox="0 0 58 16"><line x1="6" y1="8" x2="46" y2="8" stroke="${c}" stroke-width="3.5" stroke-linecap="round"/><polygon points="58,8 44,2 44,14" fill="#64748b"/><path d="M2 3 L10 8 L2 13" fill="none" stroke="#f43f5e" stroke-width="3"/></svg>`;
+
+            let impact = 0;
+            steps.forEach(st => {
+                const n = st.n || 1;
+                const size = st.s || 48;
+                if (['proj', 'fall', 'arrow', 'rain', 'slash', 'pillar'].includes(st.t)) impact = Math.max(impact, st.at + st.d);
+                for (let i = 0; i < n; i++) {
+                    const delay = st.at + i * (st.t === 'rain' ? 45 : st.t === 'slash' ? 90 : 80);
+                    const jitter = i - (n - 1) / 2;
+                    if (st.t === 'proj' || st.t === 'arrow') {
+                        const html = st.t === 'arrow' ? arrowSvg(st.c || '#78350f') : st.e;
+                        const yOff = st.t === 'arrow' ? jitter * 14 : 0;
+                        const el = spawn(html, hero.x, hero.y + yOff, `font-size:${size}px`);
+                        const spin = st.spin ? 'rotate(540deg)' : '';
+                        run(el, [
+                            { transform: tr(0, 0, 'scale(0.6)'), opacity: 0.2 },
+                            { transform: tr(0, 0, 'scale(1)'), opacity: 1, offset: 0.1 },
+                            { transform: tr(mon.x - hero.x, mon.y - hero.y - yOff, `${spin} scale(1.15)`), opacity: 1 }
+                        ], { duration: st.d, delay, easing: 'ease-in' });
+                    } else if (st.t === 'fall') {
+                        const tx = mon.x + jitter * 34;
+                        const el = spawn(st.e, tx + 90, -40, `font-size:${size}px`);
+                        run(el, [
+                            { transform: tr(0, 0, 'scale(0.7)'), opacity: 0 },
+                            { transform: tr(-20, 20, 'scale(0.8)'), opacity: 1, offset: 0.15 },
+                            { transform: tr(-90, mon.y + 40, 'scale(1.2)'), opacity: 1 }
+                        ], { duration: st.d, delay, easing: 'ease-in' });
+                    } else if (st.t === 'rain') {
+                        const tx = mon.x + (Math.random() * 110 - 55);
+                        const el = spawn(arrowSvg(st.c || '#0f766e'), tx, -30);
+                        run(el, [
+                            { transform: tr(0, 0, 'rotate(90deg)'), opacity: 0 },
+                            { transform: tr(0, 10, 'rotate(90deg)'), opacity: 1, offset: 0.1 },
+                            { transform: tr(0, mon.y + 30 + Math.random() * 30, 'rotate(90deg)'), opacity: 1 }
+                        ], { duration: st.d, delay, easing: 'ease-in' });
+                    } else if (st.t === 'burst') {
+                        const el = spawn(st.e, mon.x, mon.y, `font-size:${size}px`);
+                        run(el, [
+                            { transform: tr(0, 0, 'scale(0.2)'), opacity: 0 },
+                            { transform: tr(0, 0, 'scale(1.15)'), opacity: 1, offset: 0.35 },
+                            { transform: tr(0, 0, 'scale(1.6)'), opacity: 0 }
+                        ], { duration: st.d, delay, easing: 'ease-out' });
+                    } else if (st.t === 'ring') {
+                        const el = spawn('', mon.x, mon.y, `width:60px;height:60px;border-radius:9999px;border:6px solid ${st.c};`);
+                        run(el, [
+                            { transform: tr(0, 0, 'scale(0.3)'), opacity: 1 },
+                            { transform: tr(0, 0, 'scale(3.2)'), opacity: 0 }
+                        ], { duration: st.d, delay, easing: 'ease-out' });
+                    } else if (st.t === 'slash') {
+                        const angle = [-35, 35, -10, 60, -60, 15][i % 6];
+                        const el = spawn('', mon.x + jitter * 8, mon.y + jitter * 6, `width:160px;height:11px;border-radius:9999px;background:linear-gradient(90deg,transparent,${st.c} 20%,#fff 50%,${st.c} 80%,transparent);box-shadow:0 0 14px ${st.c},0 0 0 1px rgba(0,0,0,0.15);`);
+                        run(el, [
+                            { transform: tr(0, 0, `rotate(${angle}deg) scaleX(0)`), opacity: 1 },
+                            { transform: tr(0, 0, `rotate(${angle}deg) scaleX(1)`), opacity: 1, offset: 0.5 },
+                            { transform: tr(0, 0, `rotate(${angle}deg) scaleX(1.1)`), opacity: 0 }
+                        ], { duration: Math.min(st.d, 360), delay, easing: 'ease-out' });
+                    } else if (st.t === 'pillar') {
+                        const el = spawn('', mon.x, a.height / 2, `width:80px;height:${a.height}px;background:linear-gradient(180deg,rgba(${st.c},0),rgba(${st.c},0.95),rgba(255,255,255,0.9),rgba(${st.c},0.95),rgba(${st.c},0));filter:blur(1px);`);
+                        run(el, [
+                            { transform: tr(0, 0, 'scaleX(0.1) scaleY(0)'), opacity: 0 },
+                            { transform: tr(0, 0, 'scaleX(1) scaleY(1)'), opacity: 1, offset: 0.35 },
+                            { transform: tr(0, 0, 'scaleX(0.2) scaleY(1)'), opacity: 0 }
+                        ], { duration: st.d, delay, easing: 'ease-out' });
+                    } else if (st.t === 'self') {
+                        const el = spawn(st.e, hero.x, hero.y, `font-size:${size}px`);
+                        run(el, [
+                            { transform: tr(0, 10, 'scale(0.5)'), opacity: 0 },
+                            { transform: tr(0, -10, 'scale(1.1)'), opacity: 1, offset: 0.4 },
+                            { transform: tr(0, -50, 'scale(1.3)'), opacity: 0 }
+                        ], { duration: st.d, delay, easing: 'ease-out' });
+                    } else if (st.t === 'back') {
+                        const el = spawn(st.e, mon.x, mon.y, 'font-size:28px');
+                        const arc = -40 - Math.random() * 50;
+                        run(el, [
+                            { transform: tr(0, 0, 'scale(0.6)'), opacity: 0 },
+                            { transform: tr((hero.x - mon.x) / 2, arc, 'scale(1)'), opacity: 1, offset: 0.5 },
+                            { transform: tr(hero.x - mon.x, hero.y - mon.y, 'scale(0.7)'), opacity: 0 }
+                        ], { duration: st.d, delay, easing: 'ease-in-out' });
+                    }
+                }
+            });
+            // 沒有攻擊類步驟時（例如純爆開），以最早出現的爆開時間當作命中
+            return impact || Math.min(...steps.map(st => st.at + 200));
         }
 
         function showDamagePopup(targetId, text, colorClass) {
@@ -3359,8 +3938,11 @@
                 if (player.mp < skill.mp) skill = SKILL_CATALOG[0];
 
                 player.mp -= skill.mp;
-                const dmg = Math.round(baseAtk * skill.mult);
+                const classInfo = getClassInfo();
+                const isCrit = !!(classInfo && classInfo.tierData.critChance && Math.random() < classInfo.tierData.critChance);
+                const dmg = Math.round(baseAtk * skill.mult * (isCrit ? 2 : 1));
                 let extraNote = skill.id === 'normal' ? '' : `（${skill.icon}${skill.name}！）`;
+                if (isCrit) extraNote += '（💥爆擊！傷害×2）';
 
                 if (skill.heal) {
                     const healAmt = Math.min(skill.heal, getHeroMaxHp() - player.hp);
@@ -3374,7 +3956,6 @@
 
                 // 計算答對獲得的金幣（基礎 30 + 連對獎勵 + 寵物與職業加成），再乘上技能與四葉草倍率
                 const petGold = pet && pet.goldBonus ? pet.goldBonus : 0;
-                const classInfo = getClassInfo();
                 const classGold = classInfo && classInfo.tierData.goldBonus ? classInfo.tierData.goldBonus : 0;
                 const streakGold = Math.min(30, (battleState.streak - 1) * 5);
                 const baseGold = battleState.isMistakeMode ? 50 : 30;
@@ -3384,10 +3965,11 @@
                     goldMult *= 2;
                     extraNote += `（🍀幸運加倍，剩 ${battleState.luckyTurns} 次）`;
                 }
-                const earnedGold = (baseGold + streakGold + petGold + classGold) * goldMult;
+                const earnedGold = Math.round((baseGold + streakGold + petGold + classGold) * goldMult);
 
                 player.gold += earnedGold;
                 player.exp += 25;
+                player.classCorrect = (player.classCorrect || 0) + 1;
 
                 if (player.mistakes.includes(q.id)) {
                     player.mistakes = player.mistakes.filter(id => id !== q.id);
@@ -3402,10 +3984,14 @@
 
                 savePlayerProgress();
 
+                // 先播放技能特效，命中時才顯示傷害數字
                 heroSprite.classList.add('animate-hero-attack');
-                monsterSprite.classList.add('animate-hit');
-                showDamagePopup('monsterDamagePopup', `-${dmg}`, 'text-yellow-300');
-                showDamagePopup('heroDamagePopup', `+${earnedGold}💰`, 'text-amber-300');
+                const impactDelay = playSkillFx(skill);
+                setTimeout(() => {
+                    monsterSprite.classList.add('animate-hit');
+                    showDamagePopup('monsterDamagePopup', isCrit ? `💥-${dmg}` : `-${dmg}`, isCrit ? 'text-orange-400' : 'text-yellow-300');
+                    showDamagePopup('heroDamagePopup', `+${earnedGold}💰`, 'text-amber-300');
+                }, impactDelay);
 
                 setTimeout(() => {
                     heroSprite.classList.remove('animate-hero-attack');
@@ -3417,7 +4003,7 @@
                         `造成 ${dmg} 點傷害，並獲得 💰 +${earnedGold} 金幣！${extraNote}`,
                         q
                     );
-                }, 520);
+                }, impactDelay + 600);
 
             } else {
                 battleState.streak = 0;
@@ -3557,7 +4143,7 @@
 
             // 3. 檢查當前魔物是否被打倒
             if (battleState.monsterHp <= 0) {
-                const stage = KINGDOM_STAGES[battleState.stageId];
+                const stage = getStage(battleState.stageId);
                 battleState.waveIdx += 1;
 
                 if (battleState.waveIdx < stage.monsters.length) {
@@ -3574,8 +4160,8 @@
                     const clearGold = stage.clearRewardGold;
                     player.gold += clearGold;
 
-                    if (battleState.stageId < 4) {
-                        player.badges[battleState.stageId] = true;
+                    markStageCleared(stage);
+                    if (!stage.isBoss) {
                         savePlayerProgress();
                         updateTopHud();
                         showResultModal(
@@ -3591,19 +4177,19 @@
                             true
                         );
                     } else {
-                        player.bossCleared = true;
                         savePlayerProgress();
                         updateTopHud();
+                        const subjectName = SUBJECTS[stage.subject].name;
                         showResultModal(
-                            '👑',
-                            '傳說誕生！拯救自然科學王國！',
-                            `恭喜勇者 <b>${player.name}</b> 擊敗了最終大魔王「混沌博士」！<br><br>
+                            stage.badgeIcon,
+                            `傳說誕生！拯救${subjectName}！`,
+                            `恭喜勇者 <b>${player.name}</b> 擊敗了最終大魔王「${stage.monsters[0].name}」！<br><br>
                             <div class="bg-amber-100 border-2 border-amber-500 rounded-xl p-3 my-2 text-amber-950 font-black">
-                                🏆 獲得榮耀：【自然傳說王冠】<br>
+                                🏆 獲得榮耀：【${stage.badgeName}】<br>
                                 💰 終極寶箱賞金：+${clearGold} 金幣<br>
                                 （目前總持有：${player.gold} 金幣）
                             </div>
-                            你已經徹底掌握康軒版三年級上學期自然知識，快去商店解鎖全套傳說造型吧！`,
+                            你已經徹底掌握康軒版三年級上學期${stage.subject === 'social' ? '社會' : '自然'}知識，快去商店解鎖全套傳說造型吧！`,
                             true
                         );
                     }
@@ -3622,8 +4208,18 @@
         /* ==========================================================================
            10. 自然秘笈圖鑑與通用訊息彈窗控制
            ========================================================================== */
+        const SCIENCE_ENCYC_TABS = ['🌱 一、多采多姿的植物', '🧲 二、生活中的力', '🌬️ 三、奇妙的空氣', '🧪 四、廚房裡的科學'];
+        let encycSubject = 'science';
+
+        function getEncycEntries(subject) {
+            return subject === 'social'
+                ? SOCIAL_ENCYCLOPEDIA
+                : ENCYCLOPEDIA_DATA.map((html, i) => ({ tab: SCIENCE_ENCYC_TABS[i], html }));
+        }
+
         function openEncyclopedia() {
             playSfx('select');
+            encycSubject = currentSubject;
             switchEncycTab(0);
             document.getElementById('encyclopediaModal').classList.remove('hidden');
         }
@@ -3633,17 +4229,24 @@
             document.getElementById('encyclopediaModal').classList.add('hidden');
         }
 
+        function switchEncycSubject(subject) {
+            encycSubject = subject;
+            switchEncycTab(0);
+        }
+
         function switchEncycTab(idx) {
             playSfx('select');
-            for (let i = 0; i < 4; i++) {
-                const tab = document.getElementById(`encycTab_${i}`);
-                if (i === idx) {
-                    tab.className = 'rpg-btn bg-emerald-500 text-white font-black py-2 px-3 rounded-xl text-xs sm:text-sm';
-                } else {
-                    tab.className = 'rpg-btn bg-amber-100 text-amber-900 font-black py-2 px-3 rounded-xl text-xs sm:text-sm';
-                }
-            }
-            document.getElementById('encycContentArea').innerHTML = ENCYCLOPEDIA_DATA[idx];
+            document.getElementById('encycTitle').textContent = `康軒三上${encycSubject === 'social' ? '社會' : '自然'}・考前必勝秘笈圖鑑`;
+            document.getElementById('encycSubjectTabs').innerHTML = ['science', 'social'].map(sub => `
+                <button onclick="switchEncycSubject('${sub}')" class="rpg-btn ${sub === encycSubject ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-900'} font-black py-1.5 px-3 rounded-xl text-xs sm:text-sm">
+                    ${SUBJECTS[sub].icon} ${sub === 'social' ? '社會' : '自然'}
+                </button>`).join('');
+            const entries = getEncycEntries(encycSubject);
+            document.getElementById('encycTabs').innerHTML = entries.map((e, i) => `
+                <button onclick="switchEncycTab(${i})" class="rpg-btn ${i === idx ? 'bg-emerald-500 text-white' : 'bg-amber-100 text-amber-900'} font-black py-2 px-3 rounded-xl text-xs sm:text-sm">
+                    ${e.tab}
+                </button>`).join('');
+            document.getElementById('encycContentArea').innerHTML = entries[idx].html;
         }
 
         function showResultModal(iconEmoji, title, descHtml, showShopBtn = false) {
