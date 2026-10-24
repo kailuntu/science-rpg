@@ -635,6 +635,7 @@
                     正確答案：<span id="expCorrectAnswerText" class="font-black underline"></span>
                 </div>
                 <p id="expDetailText" class="text-sm sm:text-base text-amber-950 leading-relaxed font-medium"></p>
+                <div id="expConceptBox" class="mt-3 text-xs sm:text-sm bg-sky-50 border border-sky-300 rounded-lg px-3 py-2 text-sky-950"></div>
             </div>
 
             <div class="text-center">
@@ -695,6 +696,8 @@
 
     <!-- ==================== 遊戲核心邏輯、紙娃娃商店與題庫腳本 ==================== -->
     <script src="social-data.js"></script>
+    <script src="concepts.js"></script>
+    <script src="questions-extra.js"></script>
     <script>
         /* ==========================================================================
            1. Web Audio API 輕快 RPG 音效合成器 (新增金幣聲、打鐵升級聲)
@@ -1469,8 +1472,40 @@
             return ALL_STAGES.find(s => s.subject === subject && s.isBoss);
         }
 
+        let allQuestionsCache = null;
         function getAllQuestions() {
-            return QUESTION_BANK.concat(SOCIAL_QUESTION_BANK);
+            if (!allQuestionsCache) {
+                allQuestionsCache = QUESTION_BANK.concat(SOCIAL_QUESTION_BANK, EXTRA_SCIENCE_QUESTIONS, EXTRA_SOCIAL_QUESTIONS);
+            }
+            return allQuestionsCache;
+        }
+
+        // ---------- 單元觀念：每題對應的觀念、答題紀錄與掌握度 ----------
+        function getConcept(q) {
+            const cid = q.concept || QUESTION_CONCEPT_MAP[q.id];
+            return CONCEPTS.find(c => c.id === cid) || null;
+        }
+
+        function getConceptQuestions(conceptId) {
+            return getAllQuestions().filter(q => (q.concept || QUESTION_CONCEPT_MAP[q.id]) === conceptId);
+        }
+
+        function recordConceptAnswer(q, isCorrect) {
+            const concept = getConcept(q);
+            if (!concept) return;
+            const stat = player.conceptStats[concept.id] || { c: 0, w: 0 };
+            if (isCorrect) stat.c += 1; else stat.w += 1;
+            player.conceptStats[concept.id] = stat;
+        }
+
+        function getConceptMastery(conceptId) {
+            const stat = player.conceptStats[conceptId] || { c: 0, w: 0 };
+            const total = stat.c + stat.w;
+            if (total === 0) return { label: '⬜ 尚未練習', cls: 'bg-stone-100 text-stone-600 border-stone-300', stat, total, rate: 0 };
+            const rate = stat.c / total;
+            if (total >= 3 && rate >= 0.8) return { label: '⭐ 已掌握', cls: 'bg-emerald-100 text-emerald-800 border-emerald-400', stat, total, rate };
+            if (rate >= 0.5) return { label: '🔸 加油中', cls: 'bg-amber-100 text-amber-800 border-amber-400', stat, total, rate };
+            return { label: '❗ 需加強', cls: 'bg-rose-100 text-rose-800 border-rose-400', stat, total, rate };
         }
 
         function getStageQuestions(stageId) {
@@ -2651,7 +2686,9 @@
                 socialBadges: [false, false, false, false, false, false],
                 socialBossCleared: false,
                 bossCleared: false,
-                mistakes: []
+                mistakes: [],
+                // 每個觀念的答對(c)/答錯(w)次數
+                conceptStats: {}
             };
         }
 
@@ -2676,6 +2713,7 @@
                     if (!Array.isArray(player.learnedSkills)) player.learnedSkills = getDefaultPlayer().learnedSkills;
                     if (!Array.isArray(player.socialBadges)) player.socialBadges = getDefaultPlayer().socialBadges;
                     if (!Array.isArray(player.masteredClasses)) player.masteredClasses = [];
+                    if (!player.conceptStats || typeof player.conceptStats !== 'object') player.conceptStats = {};
                     return true;
                 }
             } catch (e) {
@@ -2737,6 +2775,10 @@
 
         let battleState = {
             isMistakeMode: false,
+            practiceConcept: null,
+            practiceTotal: 0,
+            practiceDone: 0,
+            practiceCorrect: 0,
             stageId: 0,
             waveIdx: 0,
             monster: null,
@@ -3493,6 +3535,7 @@
         function startStage(stageId) {
             playSfx('select');
             battleState.isMistakeMode = false;
+            battleState.practiceConcept = null;
             battleState.stageId = stageId;
             battleState.waveIdx = 0;
             battleState.shieldActive = false;
@@ -3517,6 +3560,7 @@
             if (player.mistakes.length === 0) return;
             playSfx('select');
             battleState.isMistakeMode = true;
+            battleState.practiceConcept = null;
             battleState.stageId = 0;
             battleState.waveIdx = 0;
             battleState.shieldActive = false;
@@ -3540,11 +3584,80 @@
             setBgm('battle');
             document.getElementById('battleUnitTag').textContent = '錯題修練室（答對賞金+50）';
             document.getElementById('battleUnitTag').className = 'bg-purple-600 text-white text-xs font-black px-2.5 py-1 rounded-lg';
-            document.getElementById('battleStageTitle').textContent = '戰勝曾經答錯的自然考題！';
+            document.getElementById('battleStageTitle').textContent = '戰勝曾經答錯的考題！';
             document.getElementById('battleWaveInfo').textContent = `剩餘錯題：${player.mistakes.length} 題`;
 
             renderBattleArenaUI();
             loadNextQuestion();
+        }
+
+        function startConceptPractice(conceptId) {
+            const concept = CONCEPTS.find(c => c.id === conceptId);
+            const questions = getConceptQuestions(conceptId);
+            if (!concept || !questions.length) return;
+            playSfx('select');
+            document.getElementById('encyclopediaModal').classList.add('hidden');
+
+            const stage = getStage(concept.unit);
+            battleState.isMistakeMode = false;
+            battleState.practiceConcept = conceptId;
+            battleState.practiceTotal = questions.length;
+            battleState.practiceDone = 0;
+            battleState.practiceCorrect = 0;
+            battleState.stageId = concept.unit;
+            battleState.waveIdx = 0;
+            battleState.shieldActive = false;
+            battleState.streak = 0;
+            battleState.questionPool = shuffleArray(questions);
+            if (player.hp <= 0) {
+                player.hp = getHeroMaxHp();
+                player.mp = getHeroMaxMp();
+            }
+
+            battleState.monster = { id: stage.monsters[2].id, name: '觀念試煉石像', role: '觀念特訓', maxHp: questions.length * 60 };
+            battleState.monsterHp = battleState.monster.maxHp;
+            battleState.monsterMaxHp = battleState.monster.maxHp;
+
+            document.getElementById('screenMap').classList.add('hidden');
+            document.getElementById('screenBattle').classList.remove('hidden');
+            setBgm('battle');
+            document.getElementById('battleUnitTag').textContent = `🎯 觀念特訓｜${stage.unitTitle}`;
+            document.getElementById('battleUnitTag').className = 'bg-sky-600 text-white text-xs font-black px-2.5 py-1 rounded-lg';
+            document.getElementById('battleStageTitle').textContent = concept.name;
+            document.getElementById('battleWaveInfo').textContent = `第 1 / ${questions.length} 題`;
+            const arena = document.getElementById('battleArena');
+            arena.className = `rounded-2xl border-3 border-amber-900 p-4 sm:p-5 mb-3 relative overflow-hidden transition-colors duration-500 bg-gradient-to-b ${stage.themeBg}`;
+
+            renderBattleArenaUI();
+            loadNextQuestion();
+        }
+
+        function finishConceptPractice() {
+            const concept = CONCEPTS.find(c => c.id === battleState.practiceConcept);
+            const total = battleState.practiceTotal;
+            const correct = battleState.practiceCorrect;
+            const perfect = correct === total;
+            const rate = Math.round((correct / total) * 100);
+            battleState.practiceConcept = null;
+            if (player.hp <= 0) player.hp = getHeroMaxHp();
+            if (perfect) player.gold += 60;
+            savePlayerProgress();
+            updateTopHud();
+            playSfx(rate >= 80 ? 'win' : 'select');
+            const comment = rate >= 80
+                ? '太棒了！這個觀念你已經掌握得很好，不管題目怎麼變化都難不倒你！'
+                : rate >= 50
+                    ? '不錯喔！還有一些變化題需要加強，看看下面的重點再挑戰一次吧！'
+                    : '這個觀念還不太熟，先把重點讀一讀，再回來特訓一次一定會進步！';
+            showResultModal(
+                rate >= 80 ? '🎯' : '📘',
+                `觀念特訓完成：${concept.name}`,
+                `<div class="bg-sky-50 border-2 border-sky-400 rounded-xl p-3 my-2 text-sky-950 font-black text-lg">答對 ${correct} / ${total} 題（${rate}%）</div>
+                ${comment}${perfect ? '<br><b class="text-amber-600">全對獎勵 💰 +60 金幣！</b>' : ''}
+                <div class="text-left text-xs sm:text-sm bg-amber-50 border border-amber-300 rounded-xl p-3 mt-3"><b>📌 觀念重點：</b>${concept.summary}</div>`,
+                false
+            );
+            showMapScreen();
         }
 
         function setupWaveMonster() {
@@ -3775,7 +3888,10 @@
                 ans: newAnsIndex
             };
 
-            document.getElementById('questionTopicBadge').textContent = `考點：${battleState.currentQuestion.topic}`;
+            const qConcept = getConcept(battleState.currentQuestion);
+            document.getElementById('questionTopicBadge').textContent = qConcept
+                ? `📌 觀念：${qConcept.name}｜${battleState.currentQuestion.topic}`
+                : `考點：${battleState.currentQuestion.topic}`;
             document.getElementById('questionText').textContent = battleState.currentQuestion.q;
 
             const labels = ['A', 'B', 'C', 'D'];
@@ -3919,6 +4035,11 @@
         function submitAnswer(choiceIdx) {
             const q = battleState.currentQuestion;
             const isCorrect = (choiceIdx === q.ans);
+            recordConceptAnswer(q, isCorrect);
+            if (battleState.practiceConcept) {
+                battleState.practiceDone += 1;
+                if (isCorrect) battleState.practiceCorrect += 1;
+            }
 
             for (let i = 0; i < 4; i++) {
                 const b = document.getElementById(`optBtn_${i}`);
@@ -4095,6 +4216,17 @@
             sub.textContent = subtitle;
             document.getElementById('expCorrectAnswerText').textContent = q.options[q.ans];
             document.getElementById('expDetailText').innerHTML = q.exp;
+            const concept = getConcept(q);
+            const conceptBox = document.getElementById('expConceptBox');
+            if (concept) {
+                const m = getConceptMastery(concept.id);
+                conceptBox.innerHTML = `<div class="font-black mb-0.5">📌 對應觀念：${getStage(concept.unit).unitTitle}・${concept.act}・<span class="kw-highlight">${concept.name}</span></div>
+                    <div>${concept.summary}</div>
+                    <div class="mt-1 font-bold">掌握度：<span class="inline-block border rounded-full px-2 ${m.cls}">${m.label}</span>（累計答對 ${m.stat.c} 次、答錯 ${m.stat.w} 次）</div>`;
+                conceptBox.classList.remove('hidden');
+            } else {
+                conceptBox.classList.add('hidden');
+            }
 
             modal.classList.remove('hidden');
         }
@@ -4102,6 +4234,22 @@
         function closeExplanationAndContinue() {
             playSfx('select');
             document.getElementById('explanationModal').classList.add('hidden');
+
+            // 0. 觀念特訓：每題只出一次，全部答完就結算
+            if (battleState.practiceConcept) {
+                if (battleState.practiceDone >= battleState.practiceTotal) {
+                    finishConceptPractice();
+                    return;
+                }
+                if (player.hp <= 0) {
+                    player.hp = getHeroMaxHp();
+                    player.mp = getHeroMaxMp();
+                }
+                savePlayerProgress();
+                document.getElementById('battleWaveInfo').textContent = `第 ${battleState.practiceDone + 1} / ${battleState.practiceTotal} 題`;
+                loadNextQuestion();
+                return;
+            }
 
             // 1. 檢查勇者是否需要精靈守護恢復
             if (player.hp <= 0) {
@@ -4202,6 +4350,7 @@
 
         function fleeToMap() {
             playSfx('select');
+            battleState.practiceConcept = null;
             showMapScreen();
         }
 
@@ -4241,12 +4390,44 @@
                 <button onclick="switchEncycSubject('${sub}')" class="rpg-btn ${sub === encycSubject ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-900'} font-black py-1.5 px-3 rounded-xl text-xs sm:text-sm">
                     ${SUBJECTS[sub].icon} ${sub === 'social' ? '社會' : '自然'}
                 </button>`).join('');
-            const entries = getEncycEntries(encycSubject);
+            const entries = getEncycEntries(encycSubject).concat([{ tab: '📊 觀念掌握度・特訓', html: null }]);
             document.getElementById('encycTabs').innerHTML = entries.map((e, i) => `
-                <button onclick="switchEncycTab(${i})" class="rpg-btn ${i === idx ? 'bg-emerald-500 text-white' : 'bg-amber-100 text-amber-900'} font-black py-2 px-3 rounded-xl text-xs sm:text-sm">
+                <button onclick="switchEncycTab(${i})" class="rpg-btn ${i === idx ? 'bg-emerald-500 text-white' : e.html === null ? 'bg-sky-100 text-sky-900' : 'bg-amber-100 text-amber-900'} font-black py-2 px-3 rounded-xl text-xs sm:text-sm">
                     ${e.tab}
                 </button>`).join('');
-            document.getElementById('encycContentArea').innerHTML = entries[idx].html;
+            document.getElementById('encycContentArea').innerHTML = entries[idx].html === null
+                ? renderConceptOverview(encycSubject)
+                : entries[idx].html;
+        }
+
+        function renderConceptOverview(subject) {
+            const units = getSubjectUnitStages(subject);
+            const conceptsInSubject = CONCEPTS.filter(c => units.some(u => u.id === c.unit));
+            const mastered = conceptsInSubject.filter(c => getConceptMastery(c.id).label.includes('已掌握')).length;
+            return `<p class="text-xs sm:text-sm font-bold text-sky-900 bg-sky-50 border border-sky-300 rounded-xl px-3 py-2">
+                    每一題都對應一個單元觀念。答對率 80% 以上（至少作答 3 次）就算「已掌握」。按「🎯 觀念特訓」會把這個觀念的所有變化題各出一次，檢查是不是真的學會了！
+                    <br>目前已掌握：<b>${mastered} / ${conceptsInSubject.length}</b> 個觀念
+                </p>` + units.map(unit => `
+                <div class="mt-3">
+                    <h4 class="font-black text-base text-amber-950 mb-2">${unit.badgeIcon} ${unit.unitTitle}</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        ${CONCEPTS.filter(c => c.unit === unit.id).map(c => {
+                            const m = getConceptMastery(c.id);
+                            const n = getConceptQuestions(c.id).length;
+                            return `<div class="storybook-panel p-3 bg-white flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-start justify-between gap-2">
+                                        <span class="font-black text-sm text-amber-950">${c.name}</span>
+                                        <span class="shrink-0 text-[11px] font-black border rounded-full px-2 py-0.5 ${m.cls}">${m.label}</span>
+                                    </div>
+                                    <div class="text-[11px] font-bold text-stone-500 mb-1">${c.act}｜${n} 道變化題｜答對 ${m.stat.c}・答錯 ${m.stat.w}</div>
+                                    <p class="text-xs text-amber-900 font-medium leading-relaxed">${c.summary}</p>
+                                </div>
+                                <button onclick="startConceptPractice('${c.id}')" class="rpg-btn mt-2 w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-1.5 rounded-lg text-xs">🎯 觀念特訓（${n} 題）</button>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>`).join('');
         }
 
         function showResultModal(iconEmoji, title, descHtml, showShopBtn = false) {
