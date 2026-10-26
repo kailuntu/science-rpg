@@ -140,6 +140,22 @@
             background: #d97706;
             border-radius: 10px;
         }
+        @keyframes gachaPop {
+            0% { transform: scale(0.3) rotateY(90deg); opacity: 0; }
+            60% { transform: scale(1.08) rotateY(0deg); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .gacha-card { animation: gachaPop 0.5s ease-out both; }
+        @keyframes rainbowBorder {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        .gacha-sp {
+            border: 4px solid transparent !important;
+            background: linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, #f472b6, #fde047, #22d3ee, #a78bfa, #f472b6) border-box;
+        }
+        .gacha-sp .sp-glow { animation: rainbowBorder 2s linear infinite; }
+        .cd-danger { animation: pulseShield 0.6s ease-in-out infinite; }
         .fx-item {
             position: absolute;
             z-index: 40;
@@ -192,6 +208,9 @@
                     <button onclick="openShopModal('upgrade')" class="bg-yellow-100 hover:bg-yellow-200 border border-yellow-500 px-2.5 py-0.5 rounded-lg text-amber-800 flex items-center gap-1 transition" title="點擊進入商店花錢強化">
                         <i class="fa-solid fa-coins text-yellow-500"></i>
                         <span id="hudGold">100</span>
+                    </button>
+                    <button onclick="openGachaModal()" class="bg-cyan-100 hover:bg-cyan-200 border border-cyan-500 px-2.5 py-0.5 rounded-lg text-cyan-800 flex items-center gap-1 transition" title="星鑽：點擊前往星願召喚">
+                        💎<span id="hudGems">0</span>
                     </button>
                     <span class="text-emerald-700 flex items-center gap-1" title="王國徽章">
                         <i class="fa-solid fa-medal text-emerald-500"></i> <span id="hudBadges">0</span>/10
@@ -335,6 +354,13 @@
                                 <div class="text-[10px] text-purple-200 font-bold">更換衣服/武器/寵物</div>
                             </div>
                         </button>
+                        <button onclick="openGachaModal()" class="rpg-btn bg-gradient-to-b from-cyan-400 to-indigo-600 text-white font-black px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-star text-base text-yellow-300"></i>
+                            <div class="text-left">
+                                <div>✨ 星願召喚</div>
+                                <div class="text-[10px] text-cyan-100 font-bold">持有 💎 <span id="mapBtnGems">0</span> 星鑽</div>
+                            </div>
+                        </button>
                         <button onclick="openShopModal('class')" class="rpg-btn bg-gradient-to-b from-fuchsia-500 to-rose-600 text-white font-black px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2">
                             <i class="fa-solid fa-crown text-base"></i>
                             <div class="text-left">
@@ -408,6 +434,9 @@
                     <span id="battleWaveInfo" class="text-xs sm:text-sm font-black bg-amber-200 text-amber-900 px-3 py-1 rounded-full border border-amber-700">
                         魔物波數：1 / 3
                     </span>
+                    <button onclick="cycleTimerSetting()" class="rpg-btn bg-orange-100 hover:bg-orange-200 text-orange-900 text-xs font-bold px-2.5 py-1 rounded-lg" title="切換限時作答秒數（10／15／20 秒／關閉）">
+                        ⏱️ <span id="timerToggleText">10秒</span>
+                    </button>
                     <button onclick="fleeToMap()" class="rpg-btn bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-bold px-3 py-1 rounded-lg">
                         <i class="fa-solid fa-person-running mr-1"></i>返回地圖
                     </button>
@@ -475,6 +504,15 @@
                                 </div>
                                 <div class="w-full bg-purple-100 h-3.5 rounded-full overflow-hidden border border-purple-900">
                                     <div id="battleMonsterHpBar" class="bg-gradient-to-r from-purple-600 to-fuchsia-500 h-full transition-all duration-300" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="mt-1.5">
+                                <div class="flex justify-between text-[11px] font-bold text-orange-800 mb-0.5">
+                                    <span><i class="fa-solid fa-stopwatch text-orange-600 mr-1"></i>攻擊倒數</span>
+                                    <span id="monsterCdText">10.0 秒</span>
+                                </div>
+                                <div class="w-full bg-orange-100 h-2.5 rounded-full overflow-hidden border border-orange-800">
+                                    <div id="monsterCdBar" class="bg-gradient-to-r from-amber-400 to-orange-500 h-full" style="width: 100%"></div>
                                 </div>
                             </div>
                         </div>
@@ -610,6 +648,30 @@
         </div>
     </div>
 
+    <!-- ==================== 星願召喚（抽卡）彈窗 ==================== -->
+    <div id="gachaModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
+        <div class="storybook-card max-w-3xl w-full max-h-[92vh] flex flex-col p-4 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b-2 border-amber-300">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-b from-cyan-400 to-indigo-600 text-white flex items-center justify-center text-xl border-2 border-amber-900">✨</div>
+                    <div>
+                        <h3 class="text-lg sm:text-2xl font-black text-amber-950">星願召喚殿堂</h3>
+                        <p class="text-xs text-amber-800 font-bold">用闖關賺到的星鑽召喚裝備、造型與寵物！</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="bg-cyan-100 border-2 border-cyan-700 px-3.5 py-1.5 rounded-xl font-black text-cyan-900 flex items-center gap-1.5">
+                        💎 <span id="gachaGemsDisplay" class="text-base sm:text-lg">0</span> <span class="text-xs">星鑽</span>
+                    </div>
+                    <button onclick="closeGachaModal()" class="rpg-btn bg-red-500 text-white w-9 h-9 rounded-xl font-black flex items-center justify-center">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="gachaContent" class="overflow-y-auto pr-1 flex-1 space-y-3"></div>
+        </div>
+    </div>
+
     <!-- ==================== 5. 自然小博士解析彈窗 (答題後即時回饋) ==================== -->
     <div id="explanationModal" class="hidden fixed inset-0 z-50 bg-black/65 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="storybook-card max-w-lg w-full p-5 sm:p-6">
@@ -698,6 +760,7 @@
     <script src="social-data.js"></script>
     <script src="concepts.js"></script>
     <script src="questions-extra.js"></script>
+    <script src="gacha-data.js"></script>
     <script>
         /* ==========================================================================
            1. Web Audio API 輕快 RPG 音效合成器 (新增金幣聲、打鐵升級聲)
@@ -1310,6 +1373,54 @@
         function getClassTitle() {
             const info = getClassInfo();
             return info ? `${info.path.icon} ${info.tierData.name}` : '🧒 見習勇者';
+        }
+
+        /* ==========================================================================
+           2-3. 道具品質（N～SP）、召喚限定道具與重複強化
+           ========================================================================== */
+        [OUTFIT_CATALOG, WEAPON_CATALOG, PET_CATALOG].forEach(list => list.forEach(item => {
+            item.rarity = item.rarity || EXISTING_ITEM_RARITY[item.id] || 'N';
+        }));
+        GACHA_OUTFITS.forEach(item => OUTFIT_CATALOG.push({ ...item, price: 0, gacha: true }));
+        GACHA_WEAPONS.forEach(item => WEAPON_CATALOG.push({ ...item, price: 0, gacha: true }));
+        GACHA_PETS.forEach(item => PET_CATALOG.push({ ...item, price: 0, gacha: true }));
+
+        function getRarityInfo(rarityId) {
+            return RARITIES.find(r => r.id === rarityId) || RARITIES[0];
+        }
+
+        function rarityIndex(rarityId) {
+            return RARITIES.findIndex(r => r.id === rarityId);
+        }
+
+        function rarityBadgeHtml(rarityId) {
+            const r = getRarityInfo(rarityId);
+            return `<span class="inline-block ${r.badge} text-[10px] font-black px-1.5 py-0.5 rounded-md leading-none">${r.id}・${r.name}</span>`;
+        }
+
+        // 重複抽到的次數就是強化等級（最多 +5），每級讓道具加成 +10%
+        function getItemLevel(itemId) {
+            return Math.min(ITEM_MAX_LEVEL, (player.itemLevels && player.itemLevels[itemId]) || 0);
+        }
+
+        function itemStat(item, key) {
+            if (!item || !item[key]) return 0;
+            return Math.round(item[key] * (1 + 0.1 * getItemLevel(item.id)));
+        }
+
+        function getItemStatText(category, item) {
+            const parts = [];
+            if (itemStat(item, 'atkBonus')) parts.push(`攻擊 +${itemStat(item, 'atkBonus')}`);
+            if (itemStat(item, 'hpBonus')) parts.push(`HP +${itemStat(item, 'hpBonus')}`);
+            if (itemStat(item, 'goldBonus')) parts.push(`金幣 +${itemStat(item, 'goldBonus')}`);
+            if (itemStat(item, 'mpBonus')) parts.push(`MP +${itemStat(item, 'mpBonus')}`);
+            return parts.length ? parts.join('、') : (category === 'pet' ? '無額外加成' : '外觀造型');
+        }
+
+        function getItemPreviewSvg(category, item) {
+            if (category === 'outfit') return buildHeroAvatarSvg(item.id, player.equippedWeapon);
+            if (category === 'weapon') return `<svg viewBox="72 24 50 84" class="w-full h-full drop-shadow">${item.svg}</svg>`;
+            return item.svg || '<span class="text-xs font-bold text-stone-400">無</span>';
         }
 
         // 動態組合勇者紙娃娃 SVG（結合當前服裝 + 手持武器）
@@ -2688,7 +2799,14 @@
                 bossCleared: false,
                 mistakes: [],
                 // 每個觀念的答對(c)/答錯(w)次數
-                conceptStats: {}
+                conceptStats: {},
+                // 星願召喚：星鑽（新玩家與舊存檔都先贈送 100）、保底計數、道具強化等級
+                gems: 100,
+                gachaPity: 0,
+                gachaTotal: 0,
+                itemLevels: {},
+                // 限時作答秒數（0 = 關閉）
+                timerSetting: 10
             };
         }
 
@@ -2714,6 +2832,7 @@
                     if (!Array.isArray(player.socialBadges)) player.socialBadges = getDefaultPlayer().socialBadges;
                     if (!Array.isArray(player.masteredClasses)) player.masteredClasses = [];
                     if (!player.conceptStats || typeof player.conceptStats !== 'object') player.conceptStats = {};
+                    if (!player.itemLevels || typeof player.itemLevels !== 'object') player.itemLevels = {};
                     return true;
                 }
             } catch (e) {
@@ -2736,7 +2855,8 @@
         function getHeroMaxHp() {
             const info = getClassInfo();
             const classBonus = info && info.tierData.hpBonus ? info.tierData.hpBonus : 0;
-            return 100 + (player.lv - 1) * 15 + (player.armorLv - 1) * 30 + classBonus;
+            const outfit = OUTFIT_CATALOG.find(o => o.id === player.equippedOutfit);
+            return 100 + (player.lv - 1) * 15 + (player.armorLv - 1) * 30 + classBonus + itemStat(outfit, 'hpBonus');
         }
 
         function getHeroMaxMp() {
@@ -2748,11 +2868,11 @@
         function getHeroAtk() {
             const outfit = OUTFIT_CATALOG.find(o => o.id === player.equippedOutfit);
             const weapon = WEAPON_CATALOG.find(w => w.id === player.equippedWeapon);
-            const outfitBonus = outfit && outfit.atkBonus ? outfit.atkBonus : 0;
-            const weaponBonus = weapon && weapon.atkBonus ? weapon.atkBonus : 0;
+            const pet = PET_CATALOG.find(p => p.id === player.equippedPet);
+            const gearBonus = itemStat(outfit, 'atkBonus') + itemStat(weapon, 'atkBonus') + itemStat(pet, 'atkBonus');
             const info = getClassInfo();
             const classMult = info && info.tierData.atkMult ? info.tierData.atkMult : 1;
-            return Math.round((35 + (player.lv - 1) * 4 + (player.weaponLv - 1) * 10 + outfitBonus + weaponBonus) * classMult);
+            return Math.round((35 + (player.lv - 1) * 4 + (player.weaponLv - 1) * 10 + gearBonus) * classMult);
         }
 
         function checkLevelUp() {
@@ -2769,8 +2889,27 @@
             return leveled;
         }
 
+        // 防具每級減少 6% 受到的傷害，最多 50%
         function getArmorDamageReduction() {
-            return Math.min(12, (player.armorLv - 1) * 3);
+            return Math.min(0.5, (player.armorLv - 1) * 0.06);
+        }
+
+        // 魔物血量：資料中的基礎血量 × 2.5，並隨勇者等級成長（每級 +12%）
+        function getMonsterHpScale() {
+            return 2.5 * (1 + 0.12 * (player.lv - 1));
+        }
+
+        // 魔物攻擊力：隨勇者等級成長，精英、首領、魔王打得更痛；防具與騎士職業可減傷
+        function getMonsterAttackDamage() {
+            const stage = getStage(battleState.stageId);
+            let mult = 1;
+            if (!battleState.isMistakeMode && !battleState.practiceConcept && stage) {
+                mult = stage.isBoss ? 1.8 : ([1, 1.25, 1.5][battleState.waveIdx] || 1);
+            }
+            const info = getClassInfo();
+            const taken = info && info.tierData.dmgTakenMult ? info.tierData.dmgTakenMult : 1;
+            const base = (14 + (player.lv - 1) * 1.5) * mult;
+            return Math.max(3, Math.round(base * (1 - getArmorDamageReduction()) * taken));
         }
 
         let battleState = {
@@ -2810,7 +2949,7 @@
             document.getElementById('startHeroPreview').innerHTML = buildHeroAvatarSvg(player.equippedOutfit, player.equippedWeapon);
             document.getElementById('startPetPreview').innerHTML = getPetSvg(player.equippedPet);
 
-            const starterOutfits = OUTFIT_CATALOG.filter(o => o.price === 0);
+            const starterOutfits = OUTFIT_CATALOG.filter(o => o.price === 0 && !o.gacha);
             const grid = document.getElementById('starterOutfitGrid');
             grid.innerHTML = starterOutfits.map(o => {
                 const selected = player.equippedOutfit === o.id;
@@ -2862,6 +3001,9 @@
             document.getElementById('hudLv').textContent = player.lv;
             document.getElementById('hudAtk').textContent = getHeroAtk();
             document.getElementById('hudGold').textContent = player.gold;
+            document.getElementById('hudGems').textContent = player.gems;
+            const mapGems = document.getElementById('mapBtnGems');
+            if (mapGems) mapGems.textContent = player.gems;
 
             document.getElementById('hudBadges').textContent = getTotalBadges();
 
@@ -3013,93 +3155,49 @@
                     </div>
                 </div>`;
             } else if (currentShopTab === 'outfit') {
-                // 渲染服裝、武器外觀、隨行寵物三大造型區塊
-                const outfitCards = OUTFIT_CATALOG.map(o => {
-                    const owned = player.unlockedOutfits.includes(o.id);
-                    const equipped = player.equippedOutfit === o.id;
+                const itemCard = (category, item, owned, equipped) => {
+                    const r = getRarityInfo(item.rarity);
+                    const lvl = getItemLevel(item.id);
+                    const glow = rarityIndex(item.rarity) >= 3 ? `box-shadow:0 0 10px ${r.glow};` : '';
+                    let btn;
+                    if (equipped) btn = `<button disabled class="rpg-btn w-full bg-emerald-600 text-white font-black py-1.5 rounded-lg text-xs">✨ 使用中</button>`;
+                    else if (owned) btn = `<button onclick="buyOrEquipCosmetic('${category}', '${item.id}')" class="rpg-btn w-full bg-amber-400 hover:bg-amber-300 text-amber-950 font-black py-1.5 rounded-lg text-xs">${category === 'pet' ? '攜帶出戰' : '裝備'}</button>`;
+                    else if (item.gacha) btn = `<button onclick="openGachaModal()" class="rpg-btn w-full bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-black py-1.5 rounded-lg text-xs">🔒 星願召喚限定</button>`;
+                    else btn = `<button onclick="buyOrEquipCosmetic('${category}', '${item.id}')" class="rpg-btn w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-1.5 rounded-lg text-xs flex items-center justify-center gap-1"><i class="fa-solid fa-coins text-yellow-300"></i> ${item.price} 金幣購買</button>`;
                     return `
-                    <div class="storybook-panel p-3 flex flex-col justify-between ${equipped ? 'bg-amber-100 border-amber-900 ring-2 ring-amber-500' : 'bg-white'}">
+                    <div class="storybook-panel p-3 flex flex-col justify-between ${equipped ? 'bg-amber-100' : 'bg-white'} ${owned ? '' : 'opacity-90'} ${item.rarity === 'SP' ? 'gacha-sp' : ''}" style="border-color:${r.glow};${glow}">
                         <div class="flex items-center gap-3">
-                            <div class="w-14 h-14 shrink-0">${buildHeroAvatarSvg(o.id, player.equippedWeapon)}</div>
-                            <div>
-                                <div class="font-black text-sm text-amber-950">${o.name}</div>
-                                <div class="text-[11px] font-bold text-indigo-700">${o.bonusText}</div>
-                                <p class="text-[11px] text-amber-800 mt-0.5">${o.desc}</p>
+                            <div class="w-14 h-14 shrink-0 flex items-center justify-center rounded-xl bg-amber-50 ${owned ? '' : 'grayscale-[40%]'}">${getItemPreviewSvg(category, item)}</div>
+                            <div class="min-w-0">
+                                <div class="flex flex-wrap items-center gap-1 mb-0.5">${rarityBadgeHtml(item.rarity)}${lvl ? `<span class="text-[10px] font-black text-rose-600">+${lvl}</span>` : ''}</div>
+                                <div class="font-black text-sm text-amber-950 leading-tight">${item.name}</div>
+                                <div class="text-[11px] font-bold ${r.text}">${getItemStatText(category, item)}</div>
+                                <p class="text-[11px] text-amber-800 mt-0.5">${item.desc}</p>
                             </div>
                         </div>
-                        <div class="mt-2.5">
-                            ${equipped
-                                ? `<button disabled class="rpg-btn w-full bg-emerald-600 text-white font-black py-1.5 rounded-lg text-xs">✨ 目前穿戴中</button>`
-                                : owned
-                                    ? `<button onclick="buyOrEquipCosmetic('outfit', '${o.id}')" class="rpg-btn w-full bg-amber-400 hover:bg-amber-300 text-amber-950 font-black py-1.5 rounded-lg text-xs">立即換裝</button>`
-                                    : `<button onclick="buyOrEquipCosmetic('outfit', '${o.id}')" class="rpg-btn w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-1.5 rounded-lg text-xs flex items-center justify-center gap-1"><i class="fa-solid fa-coins text-yellow-300"></i> ${o.price} 金幣解鎖</button>`
-                            }
-                        </div>
+                        <div class="mt-2.5">${btn}</div>
                     </div>`;
-                }).join('');
-
-                const weaponCards = WEAPON_CATALOG.map(w => {
-                    const owned = player.unlockedWeapons.includes(w.id);
-                    const equipped = player.equippedWeapon === w.id;
+                };
+                const section = (title, icon, category, list, unlocked, equippedId) => {
+                    const sorted = [...list].sort((a, b) => rarityIndex(a.rarity) - rarityIndex(b.rarity));
+                    const owned = list.filter(i => unlocked.includes(i.id)).length;
                     return `
-                    <div class="storybook-panel p-3 flex flex-col justify-between ${equipped ? 'bg-amber-100 border-amber-900 ring-2 ring-amber-500' : 'bg-white'}">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 shrink-0">${buildHeroAvatarSvg(player.equippedOutfit, w.id)}</div>
-                            <div>
-                                <div class="font-black text-sm text-amber-950">${w.name}</div>
-                                <div class="text-[11px] font-bold text-red-700">攻擊力加成 +${w.atkBonus}</div>
-                                <p class="text-[11px] text-amber-800 mt-0.5">${w.desc}</p>
-                            </div>
-                        </div>
-                        <div class="mt-2.5">
-                            ${equipped
-                                ? `<button disabled class="rpg-btn w-full bg-emerald-600 text-white font-black py-1.5 rounded-lg text-xs">✨ 目前裝備中</button>`
-                                : owned
-                                    ? `<button onclick="buyOrEquipCosmetic('weapon', '${w.id}')" class="rpg-btn w-full bg-amber-400 hover:bg-amber-300 text-amber-950 font-black py-1.5 rounded-lg text-xs">裝備此武器</button>`
-                                    : `<button onclick="buyOrEquipCosmetic('weapon', '${w.id}')" class="rpg-btn w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-1.5 rounded-lg text-xs flex items-center justify-center gap-1"><i class="fa-solid fa-coins text-yellow-300"></i> ${w.price} 金幣購買</button>`
-                            }
+                    <div>
+                        <h4 class="font-black text-sm text-amber-950 mb-2">${icon} ${title}<span class="text-xs text-amber-700 ml-1">（已收集 ${owned} / ${list.length}）</span></h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                            ${sorted.map(item => itemCard(category, item, unlocked.includes(item.id), equippedId === item.id)).join('')}
                         </div>
                     </div>`;
-                }).join('');
-
-                const petCards = PET_CATALOG.map(p => {
-                    const owned = player.unlockedPets.includes(p.id);
-                    const equipped = player.equippedPet === p.id;
-                    return `
-                    <div class="storybook-panel p-3 flex flex-col justify-between ${equipped ? 'bg-amber-100 border-amber-900 ring-2 ring-amber-500' : 'bg-white'}">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 shrink-0 flex items-center justify-center bg-amber-50 rounded-xl border border-amber-300">${p.svg || '<span class="text-xs font-bold text-stone-400">無</span>'}</div>
-                            <div>
-                                <div class="font-black text-sm text-amber-950">${p.name}</div>
-                                <div class="text-[11px] font-bold text-emerald-700">${p.bonusText}</div>
-                                <p class="text-[11px] text-amber-800 mt-0.5">${p.desc}</p>
-                            </div>
-                        </div>
-                        <div class="mt-2.5">
-                            ${equipped
-                                ? `<button disabled class="rpg-btn w-full bg-emerald-600 text-white font-black py-1.5 rounded-lg text-xs">✨ 隨行出戰中</button>`
-                                : owned
-                                    ? `<button onclick="buyOrEquipCosmetic('pet', '${p.id}')" class="rpg-btn w-full bg-amber-400 hover:bg-amber-300 text-amber-950 font-black py-1.5 rounded-lg text-xs">攜帶此夥伴</button>`
-                                    : `<button onclick="buyOrEquipCosmetic('pet', '${p.id}')" class="rpg-btn w-full bg-pink-600 hover:bg-pink-500 text-white font-black py-1.5 rounded-lg text-xs flex items-center justify-center gap-1"><i class="fa-solid fa-coins text-yellow-300"></i> ${p.price} 金幣領養</button>`
-                            }
-                        </div>
-                    </div>`;
-                }).join('');
-
+                };
                 area.innerHTML = `
                 <div class="space-y-4">
-                    <div>
-                        <h4 class="font-black text-sm text-amber-950 mb-2"><i class="fa-solid fa-hat-wizard text-purple-600 mr-1"></i>勇者傳說套裝（改變衣服與頭飾外型）：</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">${outfitCards}</div>
-                    </div>
-                    <div>
-                        <h4 class="font-black text-sm text-amber-950 mb-2"><i class="fa-solid fa-wand-sparkles text-orange-600 mr-1"></i>手持神兵外觀（改變手上武器造型與攻擊力）：</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${weaponCards}</div>
-                    </div>
-                    <div>
-                        <h4 class="font-black text-sm text-amber-950 mb-2"><i class="fa-solid fa-paw text-pink-600 mr-1"></i>隨行小精靈寵物（在戰鬥中陪伴並提供金幣加成）：</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${petCards}</div>
-                    </div>
+                    <p class="text-xs font-bold text-indigo-900 bg-indigo-50 border border-indigo-300 rounded-xl px-3 py-2">
+                        品質由低到高：${RARITIES.map(r => rarityBadgeHtml(r.id)).join(' ')}<br>
+                        「🔒 星願召喚限定」的道具只能抽卡獲得；重複抽到會強化（最高 +${ITEM_MAX_LEVEL}，每級加成 +10%）。
+                    </p>
+                    ${section('勇者套裝（改變外觀，提供攻擊與生命）', '<i class="fa-solid fa-hat-wizard text-purple-600"></i>', 'outfit', OUTFIT_CATALOG, player.unlockedOutfits, player.equippedOutfit)}
+                    ${section('手持神兵（提供攻擊力）', '<i class="fa-solid fa-wand-sparkles text-orange-600"></i>', 'weapon', WEAPON_CATALOG, player.unlockedWeapons, player.equippedWeapon)}
+                    ${section('隨行寵物（提供金幣、魔力與攻擊加成）', '<i class="fa-solid fa-paw text-pink-600"></i>', 'pet', PET_CATALOG, player.unlockedPets, player.equippedPet)}
                 </div>`;
             } else if (currentShopTab === 'items') {
                 area.innerHTML = `
@@ -3351,6 +3449,14 @@
         }
 
         function buyOrEquipCosmetic(category, id) {
+            const catalog = category === 'outfit' ? OUTFIT_CATALOG : category === 'weapon' ? WEAPON_CATALOG : PET_CATALOG;
+            const unlocked = category === 'outfit' ? player.unlockedOutfits : category === 'weapon' ? player.unlockedWeapons : player.unlockedPets;
+            const target = catalog.find(i => i.id === id);
+            if (target && target.gacha && !unlocked.includes(id)) {
+                playSfx('wrong');
+                setShopFeedback(`🔒【${target.name}】是星願召喚限定道具，快去召喚殿堂試試手氣！`, true);
+                return;
+            }
             if (category === 'outfit') {
                 const item = OUTFIT_CATALOG.find(o => o.id === id);
                 if (!item) return;
@@ -3536,6 +3642,7 @@
             playSfx('select');
             battleState.isMistakeMode = false;
             battleState.practiceConcept = null;
+            battleState.resetTimerNext = true;
             battleState.stageId = stageId;
             battleState.waveIdx = 0;
             battleState.shieldActive = false;
@@ -3561,6 +3668,7 @@
             playSfx('select');
             battleState.isMistakeMode = true;
             battleState.practiceConcept = null;
+            battleState.resetTimerNext = true;
             battleState.stageId = 0;
             battleState.waveIdx = 0;
             battleState.shieldActive = false;
@@ -3601,6 +3709,7 @@
             const stage = getStage(concept.unit);
             battleState.isMistakeMode = false;
             battleState.practiceConcept = conceptId;
+            battleState.resetTimerNext = true;
             battleState.practiceTotal = questions.length;
             battleState.practiceDone = 0;
             battleState.practiceCorrect = 0;
@@ -3640,7 +3749,10 @@
             const rate = Math.round((correct / total) * 100);
             battleState.practiceConcept = null;
             if (player.hp <= 0) player.hp = getHeroMaxHp();
-            if (perfect) player.gold += 60;
+            if (perfect) {
+                player.gold += 60;
+                player.gems += 10;
+            }
             savePlayerProgress();
             updateTopHud();
             playSfx(rate >= 80 ? 'win' : 'select');
@@ -3653,7 +3765,7 @@
                 rate >= 80 ? '🎯' : '📘',
                 `觀念特訓完成：${concept.name}`,
                 `<div class="bg-sky-50 border-2 border-sky-400 rounded-xl p-3 my-2 text-sky-950 font-black text-lg">答對 ${correct} / ${total} 題（${rate}%）</div>
-                ${comment}${perfect ? '<br><b class="text-amber-600">全對獎勵 💰 +60 金幣！</b>' : ''}
+                ${comment}${perfect ? '<br><b class="text-amber-600">全對獎勵 💰 +60 金幣、💎 +10 星鑽！</b>' : ''}
                 <div class="text-left text-xs sm:text-sm bg-amber-50 border border-amber-300 rounded-xl p-3 mt-3"><b>📌 觀念重點：</b>${concept.summary}</div>`,
                 false
             );
@@ -3664,8 +3776,8 @@
             const stage = getStage(battleState.stageId);
             const monsterObj = stage.monsters[battleState.waveIdx];
             battleState.monster = monsterObj;
-            battleState.monsterHp = monsterObj.maxHp;
-            battleState.monsterMaxHp = monsterObj.maxHp;
+            battleState.monsterMaxHp = Math.round(monsterObj.maxHp * getMonsterHpScale());
+            battleState.monsterHp = battleState.monsterMaxHp;
 
             document.getElementById('battleUnitTag').textContent = stage.unitTitle;
             document.getElementById('battleUnitTag').className = `${stage.tagColor} text-white text-xs font-black px-2.5 py-1 rounded-lg`;
@@ -3864,8 +3976,115 @@
             });
         }
 
+        /* ---------- 限時作答：魔物的攻擊冷卻條 ----------
+           倒數歸零時魔物會攻擊勇者，接著重新倒數；答對發動攻擊後，下一題重新倒數。
+           答題動畫、解說卡、商店等視窗開著時暫停。 */
+        const ATTACK_TIMER_OPTIONS = [10, 15, 20, 0];
+
+        function getAttackCd() {
+            return typeof player.timerSetting === 'number' ? player.timerSetting : 10;
+        }
+
+        function resetAttackTimer() {
+            battleState.cdRemaining = getAttackCd();
+            renderAttackTimer();
+        }
+
+        function renderAttackTimer() {
+            const cd = getAttackCd();
+            const toggle = document.getElementById('timerToggleText');
+            if (toggle) toggle.textContent = cd ? `${cd}秒` : '關閉';
+            const bar = document.getElementById('monsterCdBar');
+            const text = document.getElementById('monsterCdText');
+            if (!cd) {
+                bar.style.width = '0%';
+                text.textContent = '限時已關閉';
+                return;
+            }
+            const remain = Math.max(0, battleState.cdRemaining);
+            bar.style.width = `${(remain / cd) * 100}%`;
+            bar.className = remain <= 3
+                ? 'bg-gradient-to-r from-red-500 to-rose-600 h-full cd-danger'
+                : 'bg-gradient-to-r from-amber-400 to-orange-500 h-full';
+            text.textContent = `${remain.toFixed(1)} 秒`;
+        }
+
+        function cycleTimerSetting() {
+            playSfx('select');
+            const idx = ATTACK_TIMER_OPTIONS.indexOf(getAttackCd());
+            player.timerSetting = ATTACK_TIMER_OPTIONS[(idx + 1) % ATTACK_TIMER_OPTIONS.length];
+            savePlayerProgress();
+            resetAttackTimer();
+        }
+
+        function isAttackTimerRunning() {
+            if (!getAttackCd() || battleState.timerPaused || document.hidden) return false;
+            if (document.getElementById('screenBattle').classList.contains('hidden')) return false;
+            return ['explanationModal', 'shopModal', 'resultModal', 'encyclopediaModal', 'gachaModal']
+                .every(id => document.getElementById(id).classList.contains('hidden'));
+        }
+
+        function monsterTimedAttack() {
+            battleState.cdRemaining = getAttackCd();
+            battleState.streak = 0;
+            const heroSprite = document.getElementById('battleHeroSprite');
+            const monsterSprite = document.getElementById('battleMonsterSprite');
+
+            if (battleState.shieldActive) {
+                playSfx('select');
+                battleState.shieldActive = false;
+                showDamagePopup('heroDamagePopup', '🛡️護盾抵擋！', 'text-yellow-300');
+                savePlayerProgress();
+                updateBattleBars();
+                return;
+            }
+
+            playSfx('wrong');
+            const dmg = getMonsterAttackDamage();
+            player.hp = Math.max(0, player.hp - dmg);
+            monsterSprite.classList.add('animate-monster-attack');
+            heroSprite.classList.add('animate-hit');
+            showDamagePopup('heroDamagePopup', `⏰-${dmg}`, 'text-red-400');
+            setTimeout(() => {
+                monsterSprite.classList.remove('animate-monster-attack');
+                heroSprite.classList.remove('animate-hit');
+            }, 520);
+
+            if (player.hp <= 0) {
+                player.hp = getHeroMaxHp();
+                player.mp = getHeroMaxMp();
+                showResultModal(
+                    '🧚',
+                    '時間到！自然精靈緊急救援！',
+                    '作答時間用完，被魔物擊倒了……精靈幫你把 HP 與 MP 補滿了！可以試著快一點作答、到商店強化防具，或按戰鬥畫面上方的「⏱️」調整秒數。',
+                    true
+                );
+            }
+            savePlayerProgress();
+            updateBattleBars();
+            updateTopHud();
+        }
+
+        let lastTimerTick = performance.now();
+        setInterval(() => {
+            const now = performance.now();
+            const dt = Math.min(0.3, (now - lastTimerTick) / 1000);
+            lastTimerTick = now;
+            if (!isAttackTimerRunning()) return;
+            battleState.cdRemaining -= dt;
+            if (battleState.cdRemaining <= 0) monsterTimedAttack();
+            renderAttackTimer();
+        }, 100);
+
         function loadNextQuestion() {
             battleState.lensUsedThisTurn = false;
+            battleState.timerPaused = false;
+            if (battleState.resetTimerNext || !(battleState.cdRemaining > 0)) {
+                battleState.resetTimerNext = false;
+                resetAttackTimer();
+            } else {
+                renderAttackTimer();
+            }
             updateBattleBars();
 
             if (battleState.questionPool.length === 0) {
@@ -4036,6 +4255,9 @@
             const q = battleState.currentQuestion;
             const isCorrect = (choiceIdx === q.ans);
             recordConceptAnswer(q, isCorrect);
+            // 作答動畫期間暫停倒數；答對（成功發動攻擊）後下一題重新倒數
+            battleState.timerPaused = true;
+            if (isCorrect) battleState.resetTimerNext = true;
             if (battleState.practiceConcept) {
                 battleState.practiceDone += 1;
                 if (isCorrect) battleState.practiceCorrect += 1;
@@ -4071,12 +4293,12 @@
                     extraNote += `（🌿回復 ${healAmt} HP）`;
                 }
                 if (skill.mpGain) {
-                    const mpGain = skill.mpGain + (pet && pet.mpBonus ? pet.mpBonus : 0);
+                    const mpGain = skill.mpGain + itemStat(pet, 'mpBonus');
                     player.mp = Math.min(getHeroMaxMp(), player.mp + mpGain);
                 }
 
                 // 計算答對獲得的金幣（基礎 30 + 連對獎勵 + 寵物與職業加成），再乘上技能與四葉草倍率
-                const petGold = pet && pet.goldBonus ? pet.goldBonus : 0;
+                const petGold = itemStat(pet, 'goldBonus');
                 const classGold = classInfo && classInfo.tierData.goldBonus ? classInfo.tierData.goldBonus : 0;
                 const streakGold = Math.min(30, (battleState.streak - 1) * 5);
                 const baseGold = battleState.isMistakeMode ? 50 : 30;
@@ -4089,6 +4311,7 @@
                 const earnedGold = Math.round((baseGold + streakGold + petGold + classGold) * goldMult);
 
                 player.gold += earnedGold;
+                player.gems += 2;
                 player.exp += 25;
                 player.classCorrect = (player.classCorrect || 0) + 1;
 
@@ -4121,7 +4344,7 @@
                     updateTopHud();
                     openExplanationModal(
                         true,
-                        `造成 ${dmg} 點傷害，並獲得 💰 +${earnedGold} 金幣！${extraNote}`,
+                        `造成 ${dmg} 點傷害，並獲得 💰 +${earnedGold} 金幣、💎 +2 星鑽！${extraNote}`,
                         q
                     );
                 }, impactDelay + 600);
@@ -4170,9 +4393,7 @@
                 }
 
                 playSfx('wrong');
-                const classInfo = getClassInfo();
-                const dmgTakenMult = classInfo && classInfo.tierData.dmgTakenMult ? classInfo.tierData.dmgTakenMult : 1;
-                const monsterDmg = Math.max(3, Math.round(Math.max(6, 20 - getArmorDamageReduction()) * dmgTakenMult));
+                const monsterDmg = getMonsterAttackDamage();
                 player.hp = Math.max(0, player.hp - monsterDmg);
                 savePlayerProgress();
 
@@ -4273,13 +4494,14 @@
                 if (player.mistakes.length === 0 || battleState.monsterHp <= 0) {
                     playSfx('win');
                     player.gold += 120;
+                    player.gems += 10;
                     player.exp += 50;
                     savePlayerProgress();
                     updateTopHud();
                     showResultModal(
                         '🌟',
                         '錯題修練大功告成！',
-                        `太厲害了！你已經把錯題全部學會並破解了，獲得修練寶箱獎勵 <b class="text-amber-600">💰 +120 金幣</b> 與 50 點經驗值！`,
+                        `太厲害了！你已經把錯題全部學會並破解了，獲得修練寶箱獎勵 <b class="text-amber-600">💰 +120 金幣、💎 +10 星鑽</b> 與 50 點經驗值！`,
                         true
                     );
                     showMapScreen();
@@ -4298,6 +4520,7 @@
                     // 擊敗小怪也給小賞金
                     playSfx('coin');
                     player.gold += 40;
+                    player.gems += 5;
                     savePlayerProgress();
                     updateTopHud();
                     setupWaveMonster();
@@ -4306,7 +4529,9 @@
                     // 整個關卡通關！頒發豪華過關寶箱金幣
                     playSfx('win');
                     const clearGold = stage.clearRewardGold;
+                    const clearGems = stage.isBoss ? 40 : 20;
                     player.gold += clearGold;
+                    player.gems += clearGems;
 
                     markStageCleared(stage);
                     if (!stage.isBoss) {
@@ -4318,7 +4543,7 @@
                             `你成功打敗了守關首領「<b>${stage.monsters[stage.monsters.length - 1].name}</b>」！<br><br>
                             <div class="bg-amber-100 border-2 border-amber-500 rounded-xl p-3 my-2 text-amber-950 font-black">
                                 🏅 獲得徽章：【${stage.badgeName}】<br>
-                                💰 過關寶箱賞金：+${clearGold} 金幣<br>
+                                💰 過關寶箱賞金：+${clearGold} 金幣、💎 +${clearGems} 星鑽<br>
                                 （目前總持有：${player.gold} 金幣）
                             </div>
                             快去商店用金幣強化裝備或換上帥氣新造型吧！`,
@@ -4334,7 +4559,7 @@
                             `恭喜勇者 <b>${player.name}</b> 擊敗了最終大魔王「${stage.monsters[0].name}」！<br><br>
                             <div class="bg-amber-100 border-2 border-amber-500 rounded-xl p-3 my-2 text-amber-950 font-black">
                                 🏆 獲得榮耀：【${stage.badgeName}】<br>
-                                💰 終極寶箱賞金：+${clearGold} 金幣<br>
+                                💰 終極寶箱賞金：+${clearGold} 金幣、💎 +${clearGems} 星鑽<br>
                                 （目前總持有：${player.gold} 金幣）
                             </div>
                             你已經徹底掌握康軒版三年級上學期${stage.subject === 'social' ? '社會' : '自然'}知識，快去商店解鎖全套傳說造型吧！`,
@@ -4398,6 +4623,144 @@
             document.getElementById('encycContentArea').innerHTML = entries[idx].html === null
                 ? renderConceptOverview(encycSubject)
                 : entries[idx].html;
+        }
+
+        /* ==========================================================================
+           星願召喚：機率、保底與抽卡結果
+           ========================================================================== */
+        function openGachaModal() {
+            playSfx('select');
+            document.getElementById('shopModal').classList.add('hidden');
+            document.getElementById('gachaModal').classList.remove('hidden');
+            renderGacha(null);
+        }
+
+        function closeGachaModal() {
+            playSfx('select');
+            document.getElementById('gachaModal').classList.add('hidden');
+            updateTopHud();
+            if (!document.getElementById('screenBattle').classList.contains('hidden')) {
+                renderBattleArenaUI();
+            }
+        }
+
+        function rollRarity(highOnly) {
+            const pool = highOnly ? RARITIES.filter(r => rarityIndex(r.id) >= rarityIndex('UR')) : RARITIES;
+            const total = pool.reduce((sum, r) => sum + r.rate, 0);
+            let x = Math.random() * total;
+            for (const r of pool) {
+                x -= r.rate;
+                if (x < 0) return r.id;
+            }
+            return pool[pool.length - 1].id;
+        }
+
+        function getGachaEntries(rarityId) {
+            return [
+                ...OUTFIT_CATALOG.map(item => ({ category: 'outfit', item })),
+                ...WEAPON_CATALOG.map(item => ({ category: 'weapon', item })),
+                ...PET_CATALOG.filter(p => p.id !== 'none').map(item => ({ category: 'pet', item }))
+            ].filter(e => e.item.rarity === rarityId);
+        }
+
+        function grantGachaItem(category, item) {
+            const unlocked = category === 'outfit' ? player.unlockedOutfits : category === 'weapon' ? player.unlockedWeapons : player.unlockedPets;
+            if (!unlocked.includes(item.id)) {
+                unlocked.push(item.id);
+                return { isNew: true, level: 0, refund: 0 };
+            }
+            const lvl = player.itemLevels[item.id] || 0;
+            if (lvl < ITEM_MAX_LEVEL) {
+                player.itemLevels[item.id] = lvl + 1;
+                return { isNew: false, level: lvl + 1, refund: 0 };
+            }
+            const refund = getRarityInfo(item.rarity).refund;
+            player.gems += refund;
+            return { isNew: false, level: lvl, refund };
+        }
+
+        function doGacha(count) {
+            const cost = count === 10 ? GACHA_COST_TEN : GACHA_COST_SINGLE;
+            if (player.gems < cost) {
+                playSfx('wrong');
+                renderGacha(null, `💎 星鑽不足！需要 ${cost} 顆，目前只有 ${player.gems} 顆。去闖關答題賺星鑽吧！`);
+                return;
+            }
+            player.gems -= cost;
+            const results = [];
+            for (let i = 0; i < count; i++) {
+                player.gachaPity += 1;
+                player.gachaTotal += 1;
+                let rarity = rollRarity(player.gachaPity >= GACHA_PITY);
+                // 十連抽保證至少一個精良（SR）以上
+                if (count === 10 && i === count - 1 && !results.some(r => rarityIndex(r.item.rarity) >= rarityIndex('SR')) && rarityIndex(rarity) < rarityIndex('SR')) {
+                    rarity = 'SR';
+                }
+                if (rarityIndex(rarity) >= rarityIndex('UR')) player.gachaPity = 0;
+                const entries = getGachaEntries(rarity);
+                const entry = entries[Math.floor(Math.random() * entries.length)];
+                results.push({ ...entry, ...grantGachaItem(entry.category, entry.item) });
+            }
+            savePlayerProgress();
+            updateTopHud();
+            const best = Math.max(...results.map(r => rarityIndex(r.item.rarity)));
+            playSfx(best >= rarityIndex('UR') ? 'win' : best >= rarityIndex('SSR') ? 'upgrade' : 'coin');
+            renderGacha(results);
+        }
+
+        function renderGacha(results, warning = '') {
+            document.getElementById('gachaGemsDisplay').textContent = player.gems;
+            const pityLeft = GACHA_PITY - player.gachaPity;
+            const resultHtml = results ? `
+                <div class="storybook-panel p-3 bg-gradient-to-b from-indigo-950 to-purple-900">
+                    <div class="text-center text-amber-200 font-black text-sm mb-2">✨ 召喚結果 ✨</div>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                        ${results.map((res, i) => {
+                            const r = getRarityInfo(res.item.rarity);
+                            const high = rarityIndex(res.item.rarity) >= rarityIndex('SSR');
+                            const note = res.isNew ? '<span class="text-rose-600">🆕 新獲得！</span>'
+                                : res.refund ? `已滿級 → 💎+${res.refund}`
+                                : `重複 → 強化 +${res.level}`;
+                            return `<div class="gacha-card ${res.item.rarity === 'SP' ? 'gacha-sp' : ''} rounded-xl p-2 text-center bg-white border-4" style="border-color:${r.glow};animation-delay:${i * 110}ms;${high ? `box-shadow:0 0 16px ${r.glow};` : ''}">
+                                <div class="${res.item.rarity === 'SP' ? 'sp-glow' : ''}">${rarityBadgeHtml(res.item.rarity)}</div>
+                                <div class="w-14 h-14 mx-auto my-1">${getItemPreviewSvg(res.category, res.item)}</div>
+                                <div class="font-black text-[11px] text-amber-950 leading-tight">${res.item.name}</div>
+                                <div class="text-[10px] font-bold text-stone-500">${res.category === 'outfit' ? '套裝' : res.category === 'weapon' ? '武器' : '寵物'}｜${note}</div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                    <p class="text-center text-[11px] text-indigo-200 font-bold mt-2">新道具已放進「商店 ➔ 百變造型與寵物」，記得去裝備喔！</p>
+                </div>` : '';
+            document.getElementById('gachaContent').innerHTML = `
+                ${warning ? `<div class="text-sm font-black text-rose-800 bg-rose-100 border border-rose-400 px-3 py-2 rounded-xl">${warning}</div>` : ''}
+                <div class="storybook-panel p-4 bg-gradient-to-r from-cyan-100 via-indigo-50 to-pink-100">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <div class="font-black text-amber-950">🎯 保底進度：再 <span class="text-rose-600 text-lg">${pityLeft}</span> 抽內必出「傳奇（UR）」以上！</div>
+                        <div class="text-xs font-bold text-stone-600">累計召喚 ${player.gachaTotal} 次</div>
+                    </div>
+                    <div class="w-full bg-white h-3 rounded-full overflow-hidden border border-indigo-700 mb-3">
+                        <div class="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 h-full" style="width:${(player.gachaPity / GACHA_PITY) * 100}%"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="doGacha(1)" class="rpg-btn bg-gradient-to-b from-sky-400 to-indigo-600 text-white font-black py-3 rounded-xl text-sm sm:text-base">
+                            單抽<div class="text-xs text-sky-100">💎 ${GACHA_COST_SINGLE}</div>
+                        </button>
+                        <button onclick="doGacha(10)" class="rpg-btn bg-gradient-to-b from-amber-400 to-rose-500 text-white font-black py-3 rounded-xl text-sm sm:text-base">
+                            十連抽（保證精良以上）<div class="text-xs text-amber-100">💎 ${GACHA_COST_TEN}（省 10 顆）</div>
+                        </button>
+                    </div>
+                </div>
+                ${resultHtml}
+                <div class="storybook-panel p-3 bg-white">
+                    <h4 class="font-black text-sm text-amber-950 mb-2">📜 召喚機率表</h4>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-center">
+                        ${RARITIES.map(r => `<div class="rounded-lg border p-1.5" style="border-color:${r.glow}">${rarityBadgeHtml(r.id)}<div class="text-sm font-black ${r.text} mt-1">${r.rate}%</div><div class="text-[10px] text-stone-500">${getGachaEntries(r.id).length} 種</div></div>`).join('')}
+                    </div>
+                    <p class="text-[11px] text-amber-900 font-medium mt-2 leading-relaxed">
+                        💎 星鑽取得方式：答對一題 +2、擊敗魔物 +5、單元過關 +20、擊敗大魔王 +40、錯題修練完成 +10、觀念特訓全對 +10。<br>
+                        重複抽到的道具會強化 +1（最高 +${ITEM_MAX_LEVEL}，每級加成 +10%）；已滿級則退還星鑽。
+                    </p>
+                </div>`;
         }
 
         function renderConceptOverview(subject) {
