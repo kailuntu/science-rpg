@@ -307,7 +307,7 @@
             <div class="storybook-panel p-4 mb-5 bg-gradient-to-r from-amber-100 via-orange-50 to-yellow-100 border-amber-700">
                 <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
                     <!-- 勇者紙娃娃與屬性資訊 -->
-                    <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+                    <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:flex-1 min-w-0">
                         <div class="relative w-24 h-24 rounded-2xl bg-gradient-to-b from-sky-200 to-amber-100 border-3 border-amber-900 flex items-center justify-center shrink-0 shadow-md cursor-pointer" onclick="openShopModal('outfit')" title="點擊換裝">
                             <div id="mapHeroPreview" class="w-20 h-20 animate-float"></div>
                             <div id="mapPetPreview" class="w-10 h-10 absolute -right-2 -top-2 animate-pet"></div>
@@ -339,7 +339,7 @@
                     </div>
 
                     <!-- 右側行動按鈕組：奇幻商店街、變裝衣櫥、泉水恢復 -->
-                    <div class="flex flex-wrap items-center justify-center gap-2 shrink-0 w-full lg:w-auto">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2 w-full lg:w-[440px] shrink-0">
                         <button onclick="openShopModal('upgrade')" class="rpg-btn bg-gradient-to-b from-amber-400 to-orange-500 text-white font-black px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2">
                             <i class="fa-solid fa-hammer text-base"></i>
                             <div class="text-left">
