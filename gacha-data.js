@@ -34,6 +34,8 @@ const W = {
     spear: (shaft, tip, ribbon, aura = '') => `<g transform="translate(80, 30)">${aura}<line x1="18" y1="14" x2="6" y2="68" stroke="${shaft}" stroke-width="5" stroke-linecap="round"/><polygon points="18,0 25,16 18,22 11,16" fill="${tip}" stroke="#1e293b" stroke-width="2.5"/><path d="M14 22 Q6 26 10 32" fill="none" stroke="${ribbon}" stroke-width="3"/></g>`,
     hammer: (head, shaft, band, aura = '') => `<g transform="translate(78, 44)">${aura}<line x1="16" y1="16" x2="6" y2="56" stroke="${shaft}" stroke-width="6" stroke-linecap="round"/><rect x="2" y="2" width="28" height="16" rx="4" fill="${head}" stroke="#1e293b" stroke-width="2.5"/><rect x="13" y="2" width="6" height="16" fill="${band}"/></g>`,
     tome: (cover, page, gem, aura = '') => `<g transform="translate(84, 58)">${aura}<rect x="0" y="0" width="24" height="30" rx="3" fill="${cover}" stroke="#1e293b" stroke-width="2.5"/><rect x="4" y="3" width="17" height="24" rx="1" fill="${page}"/><circle cx="12" cy="15" r="5" fill="${gem}" stroke="#1e293b" stroke-width="1.5"/></g>`,
+    dagger: (blade, guard, hilt, aura = '') => `<g transform="translate(84, 50)">${aura}<polygon points="12,0 17,26 12,30 7,26" fill="${blade}" stroke="#334155" stroke-width="2.5"/><rect x="2" y="26" width="20" height="5" rx="2.5" fill="${guard}" stroke="#334155" stroke-width="2"/><line x1="12" y1="31" x2="10" y2="44" stroke="${hilt}" stroke-width="5" stroke-linecap="round"/></g>`,
+    twinDagger: (blade, guard, hilt, aura = '') => `<g transform="translate(78, 46)">${aura}<g transform="rotate(-18 12 22)"><polygon points="12,0 17,26 12,30 7,26" fill="${blade}" stroke="#334155" stroke-width="2.5"/><rect x="2" y="26" width="20" height="5" rx="2.5" fill="${guard}" stroke="#334155" stroke-width="2"/><line x1="12" y1="31" x2="10" y2="44" stroke="${hilt}" stroke-width="5" stroke-linecap="round"/></g><g transform="translate(14 4) rotate(18 12 22)"><polygon points="12,0 17,26 12,30 7,26" fill="${blade}" stroke="#334155" stroke-width="2.5"/><rect x="2" y="26" width="20" height="5" rx="2.5" fill="${guard}" stroke="#334155" stroke-width="2"/><line x1="12" y1="31" x2="10" y2="44" stroke="${hilt}" stroke-width="5" stroke-linecap="round"/></g></g>`,
     spoon: (bowl, handle) => `<g transform="translate(82, 44)"><ellipse cx="16" cy="10" rx="9" ry="11" fill="${bowl}" stroke="#334155" stroke-width="2.5"/><line x1="14" y1="20" x2="8" y2="58" stroke="${handle}" stroke-width="5" stroke-linecap="round"/></g>`
 };
 
@@ -129,4 +131,24 @@ const GACHA_PETS = [
     { id: 'g_qilin', rarity: 'UR', name: '雷電麒麟', desc: '傳說中帶來好運的神獸。', goldBonus: 28, mpBonus: 12, atkBonus: 20, svg: P.qilin() },
     { id: 'g_phoenix', rarity: 'SP', name: '不死鳥', desc: '浴火重生的神鳥，力量無可匹敵！', goldBonus: 40, mpBonus: 20, atkBonus: 25, svg: P.phoenix() },
     { id: 'g_unicorn', rarity: 'SP', name: '彩虹獨角獸', desc: '踏著彩虹而來的夢幻神獸！', goldBonus: 45, mpBonus: 25, atkBonus: 20, svg: P.unicorn() }
+];
+
+// 職業專屬武器：只有 classReq 職業（任一轉）才能裝備。精良（SR）可用金幣購買，史詩、傳奇只能召喚
+// maxMpBonus 魔力上限、hpBonus 生命上限、goldBonus 答對金幣、critBonus 爆擊率
+const CLASS_WEAPONS = [
+    { id: 'c_mage_sr', classReq: 'mage', rarity: 'SR', price: 900, name: '見習法師水晶杖', desc: '魔法學院發給新生的水晶法杖。', atkBonus: 30, maxMpBonus: 20, svg: W.staff('#7c3aed', '#c4b5fd', '#ddd6fe') },
+    { id: 'c_mage_ssr', classReq: 'mage', rarity: 'SSR', name: '烈焰魔導書', desc: '翻開就會冒出火焰的禁忌魔導書。', atkBonus: 50, maxMpBonus: 40, svg: W.tome('#b91c1c', '#fef3c7', '#f97316', sparkle(26, 0, '#fb923c')) },
+    { id: 'c_mage_ur', classReq: 'mage', rarity: 'UR', name: '大賢者星辰杖', desc: '歷代大賢者傳承的星辰法杖。', atkBonus: 80, maxMpBonus: 60, svg: W.staff('#1e1b4b', '#fde047', '#c4b5fd', sparkle(30, 0) + sparkle(2, 8, '#c4b5fd')) },
+    { id: 'c_knight_sr', classReq: 'knight', rarity: 'SR', price: 900, name: '騎士團長劍', desc: '王國騎士團代代相傳的寬刃長劍。', atkBonus: 28, hpBonus: 60, svg: W.sword('#cbd5e1', '#1d4ed8', '#1e3a8a', '#facc15') },
+    { id: 'c_knight_ssr', classReq: 'knight', rarity: 'SSR', name: '聖光戰錘', desc: '敲擊時會綻放聖光的神聖戰錘。', atkBonus: 46, hpBonus: 120, svg: W.hammer('#fde047', '#78350f', '#fff', sparkle(30, 0)) },
+    { id: 'c_knight_ur', classReq: 'knight', rarity: 'UR', name: '光明守護神聖劍', desc: '守護王國千年的光明聖劍。', atkBonus: 75, hpBonus: 200, svg: W.sword('#fef9c3', '#facc15', '#a16207', '#fff', sparkle(2, 6) + sparkle(30, 14, '#fff')) },
+    { id: 'c_scholar_sr', classReq: 'scholar', rarity: 'SR', price: 900, name: '自然觀察筆記', desc: '記滿觀察紀錄的筆記本，越讀越聰明。', atkBonus: 26, goldBonus: 10, svg: W.tome('#15803d', '#fff', '#facc15') },
+    { id: 'c_scholar_ssr', classReq: 'scholar', rarity: 'SSR', name: '百科全書法典', desc: '收錄天下知識的厚重法典。', atkBonus: 44, goldBonus: 18, svg: W.tome('#1d4ed8', '#e0f2fe', '#38bdf8', sparkle(26, 0, '#38bdf8')) },
+    { id: 'c_scholar_ur', classReq: 'scholar', rarity: 'UR', name: '宇宙真理之書', desc: '寫著宇宙所有答案的神秘之書。', atkBonus: 72, goldBonus: 30, svg: W.tome('#312e81', '#fef9c3', '#f472b6', sparkle(26, 0, '#f472b6') + sparkle(-2, 6, '#fde047')) },
+    { id: 'c_thief_sr', classReq: 'thief', rarity: 'SR', price: 900, name: '迅影匕首', desc: '輕巧鋒利，出手快如影子的匕首。', atkBonus: 30, critBonus: 0.05, svg: W.dagger('#e2e8f0', '#475569', '#1e293b') },
+    { id: 'c_thief_ssr', classReq: 'thief', rarity: 'SSR', name: '暗影雙刃', desc: '左右開弓的暗影雙匕首。', atkBonus: 48, critBonus: 0.1, svg: W.twinDagger('#a78bfa', '#4c1d95', '#1e1b4b') },
+    { id: 'c_thief_ur', classReq: 'thief', rarity: 'UR', name: '月牙幻影刃', desc: '在月光下會分身的傳說雙刃。', atkBonus: 78, critBonus: 0.15, svg: W.twinDagger('#fde047', '#7c3aed', '#1e1b4b', sparkle(4, 4, '#fde047') + sparkle(34, 10, '#c4b5fd')) },
+    { id: 'c_hunter_sr', classReq: 'hunter', rarity: 'SR', price: 900, name: '獵鷹長弓', desc: '獵人公會認證的長弓，射程超遠。', atkBonus: 32, maxMpBonus: 15, svg: W.bow('#a16207', '#e2e8f0', '#475569') },
+    { id: 'c_hunter_ssr', classReq: 'hunter', rarity: 'SSR', name: '風神連弩', desc: '乘著風之力連續發射的神弩。', atkBonus: 50, maxMpBonus: 25, svg: W.bow('#0d9488', '#ccfbf1', '#14b8a6', sparkle(30, 6, '#5eead4')) },
+    { id: 'c_hunter_ur', classReq: 'hunter', rarity: 'UR', name: '流星天弓', desc: '每一箭都像流星劃過天際。', atkBonus: 82, maxMpBonus: 40, svg: W.bow('#f59e0b', '#fef9c3', '#38bdf8', sparkle(32, 8) + sparkle(4, 50, '#38bdf8')) }
 ];

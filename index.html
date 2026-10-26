@@ -1268,6 +1268,17 @@
                 fx: [{ t: 'slash', c: '#f97316', n: 3, at: 0, d: 450 }, { t: 'burst', e: '🔥', s: 90, at: 350, d: 500 }] },
             { id: 'vampire', icon: '🦇', name: '生命汲取', mp: 20, tag: '20 MP｜1.5倍+回血', desc: '答對造成 1.5 倍傷害並回復 35 HP。', mult: 1.5, heal: 35, price: 400, lvReq: 10,
                 fx: [{ t: 'proj', e: '🦇', s: 44, at: 0, d: 450 }, { t: 'back', e: '❤️', n: 3, at: 450, d: 450 }] },
+            // 技能樹第三階（需要前一招達到指定等級）
+            { id: 'quintuple', icon: '💫', name: '五重連擊', mp: 45, desc: '攻擊系終極招式：5 倍傷害的連續重擊！', mult: 5, price: 600, lvReq: 14,
+                fx: [{ t: 'slash', c: '#ef4444', n: 5, at: 0, d: 500 }, { t: 'burst', e: '💥', s: 110, at: 450, d: 450 }, { t: 'ring', c: '#f97316', at: 450, d: 450 }] },
+            { id: 'sanctuary', icon: '⛲', name: '生命之泉', mp: 35, desc: '治癒系終極招式：2.5 倍傷害並回滿 HP！', mult: 2.5, heal: 9999, price: 650, lvReq: 15,
+                fx: [{ t: 'pillar', c: '134,239,172', at: 0, d: 600 }, { t: 'burst', e: '💥', s: 80, at: 350, d: 400 }, { t: 'self', e: '⛲', s: 60, at: 300, d: 650 }] },
+            { id: 'barrier', icon: '🔮', name: '絕對結界', mp: 30, desc: '守護系終極招式：2.5 倍傷害，答錯時完全免傷。', mult: 2.5, guard: true, price: 500, lvReq: 12,
+                fx: [{ t: 'self', e: '🔮', s: 60, at: 0, d: 550 }, { t: 'proj', e: '✨', s: 36, at: 200, d: 350 }, { t: 'ring', c: '#a78bfa', at: 550, d: 450 }, { t: 'burst', e: '💥', s: 80, at: 550, d: 400 }] },
+            { id: 'manaStorm', icon: '🌪️', name: '魔力風暴', mp: 0, desc: '魔力系終極招式：1.8 倍傷害，並回復大量 MP。', mult: 1.8, mpGain: 35, price: 500, lvReq: 12,
+                fx: [{ t: 'burst', e: '🌪️', s: 100, at: 0, d: 550 }, { t: 'back', e: '💧', n: 5, at: 350, d: 450 }] },
+            { id: 'jackpot', icon: '🎰', name: '黃金大獎', mp: 20, desc: '財富系終極招式：1.5 倍傷害，金幣 ×3！', mult: 1.5, goldMult: 3, price: 600, lvReq: 14,
+                fx: [{ t: 'burst', e: '🎰', s: 80, at: 0, d: 450 }, { t: 'back', e: '🪙', n: 10, at: 300, d: 600 }] },
             // 魔法師系
             { id: 'fireball', icon: '☄️', name: '烈焰火球', mp: 25, tag: '25 MP｜2.5倍傷', desc: '魔法師一轉技能：2.5 倍傷害。', mult: 2.5, classId: 'mage', tier: 1,
                 fx: [{ t: 'proj', e: '🔥', s: 60, at: 0, d: 500, spin: true }, { t: 'burst', e: '💥', s: 100, at: 500, d: 450 }, { t: 'ring', c: '#f97316', at: 500, d: 450 }] },
@@ -1302,8 +1313,83 @@
             { id: 'arrowRain', icon: '🌧️', name: '萬箭齊發', mp: 35, tag: '35 MP｜3.5倍傷', desc: '神射手二轉技能：箭雨覆蓋 3.5 倍傷害！', mult: 3.5, classId: 'hunter', tier: 2,
                 fx: [{ t: 'arrow', c: '#78350f', n: 3, at: 0, d: 350 }, { t: 'rain', c: '#0f766e', n: 10, at: 200, d: 450 }, { t: 'burst', e: '💥', s: 90, at: 600, d: 400 }] },
             { id: 'starArrow', icon: '💫', name: '流星神箭', mp: 50, tag: '50 MP｜5.5倍+回MP', desc: '天弓獵神三轉奧義：5.5 倍傷害並回復 20 MP！', mult: 5.5, mpGain: 20, classId: 'hunter', tier: 3,
-                fx: [{ t: 'arrow', c: '#0ea5e9', n: 5, at: 0, d: 380 }, { t: 'fall', e: '🌠', s: 80, n: 1, at: 250, d: 450 }, { t: 'ring', c: '#38bdf8', at: 700, d: 500 }, { t: 'burst', e: '💥', s: 110, at: 700, d: 450 }] }
+                fx: [{ t: 'arrow', c: '#0ea5e9', n: 5, at: 0, d: 380 }, { t: 'fall', e: '🌠', s: 80, n: 1, at: 250, d: 450 }, { t: 'ring', c: '#38bdf8', at: 700, d: 500 }, { t: 'burst', e: '💥', s: 110, at: 700, d: 450 }] },
+            // 職業進階分支技能：二轉後，用技能點學習（需要一轉技能 Lv.3）
+            { id: 'frostTime', icon: '❄️', name: '冰封時間', mp: 35, desc: '魔法師分支：3 倍傷害，冰封魔物讓下一次攻擊倒數多 5 秒。', mult: 3, timeBonus: 5, classId: 'mage', tier: 2, branchSkill: true, spCost: 3, req: { id: 'fireball', lv: 3 },
+                fx: [{ t: 'proj', e: '❄️', s: 56, at: 0, d: 450, spin: true }, { t: 'burst', e: '🧊', s: 90, at: 450, d: 450 }, { t: 'ring', c: '#7dd3fc', at: 450, d: 500 }] },
+            { id: 'oath', icon: '🛡️', name: '守護誓言', mp: 25, desc: '騎士分支：2 倍傷害，攻擊後展開護盾擋下下一次傷害。', mult: 2, shieldAfter: true, classId: 'knight', tier: 2, branchSkill: true, spCost: 3, req: { id: 'holyStrike', lv: 3 },
+                fx: [{ t: 'slash', c: '#fde047', n: 2, at: 0, d: 380 }, { t: 'burst', e: '💥', s: 80, at: 300, d: 400 }, { t: 'self', e: '🛡️', s: 64, at: 350, d: 600 }] },
+            { id: 'hourglass', icon: '⏳', name: '時光沙漏', mp: 20, desc: '學者分支：2 倍傷害，讓下一次攻擊倒數多 8 秒。', mult: 2, timeBonus: 8, classId: 'scholar', tier: 2, branchSkill: true, spCost: 3, req: { id: 'insight', lv: 3 },
+                fx: [{ t: 'self', e: '⏳', s: 60, at: 0, d: 500 }, { t: 'proj', e: '✨', s: 40, at: 250, d: 400 }, { t: 'burst', e: '💥', s: 80, at: 650, d: 400 }] },
+            { id: 'poisonBlade', icon: '🐍', name: '毒牙刃', mp: 20, desc: '盜賊分支：2.5 倍傷害，金幣 ×2。', mult: 2.5, goldMult: 2, classId: 'thief', tier: 2, branchSkill: true, spCost: 3, req: { id: 'backstab', lv: 3 },
+                fx: [{ t: 'proj', e: '🗡️', s: 46, at: 0, d: 260 }, { t: 'slash', c: '#22c55e', n: 3, at: 220, d: 400 }, { t: 'burst', e: '🐍', s: 70, at: 500, d: 400 }] },
+            { id: 'falcon', icon: '🦅', name: '獵鷹突擊', mp: 30, desc: '獵人分支：3 倍傷害，並回復 30 HP。', mult: 3, heal: 30, classId: 'hunter', tier: 2, branchSkill: true, spCost: 3, req: { id: 'arrowShot', lv: 3 },
+                fx: [{ t: 'proj', e: '🦅', s: 60, at: 0, d: 420 }, { t: 'burst', e: '💥', s: 90, at: 420, d: 400 }, { t: 'self', e: '❤️', s: 44, at: 500, d: 450 }] }
         ];
+
+        // 通用技能樹：每條分支由左到右，學會前一招並達到指定等級才能學下一招
+        const SKILL_BRANCHES = [
+            { id: 'basic', icon: '⚡', name: '基礎', chain: [{ id: 'normal' }] },
+            { id: 'atk', icon: '🔥', name: '攻擊系', chain: [{ id: 'double' }, { id: 'triple', reqLv: 2 }, { id: 'quintuple', reqLv: 3 }] },
+            { id: 'heal', icon: '🌿', name: '治癒系', chain: [{ id: 'heal' }, { id: 'vampire', reqLv: 2 }, { id: 'sanctuary', reqLv: 3 }] },
+            { id: 'guard', icon: '🔰', name: '守護系', chain: [{ id: 'guard' }, { id: 'barrier', reqLv: 3 }] },
+            { id: 'mana', icon: '🌀', name: '魔力系', chain: [{ id: 'drain' }, { id: 'manaStorm', reqLv: 3 }] },
+            { id: 'gold', icon: '💰', name: '財富系', chain: [{ id: 'goldRush' }, { id: 'jackpot', reqLv: 3 }] }
+        ];
+        SKILL_BRANCHES.forEach(branch => branch.chain.forEach((node, i) => {
+            const skill = SKILL_CATALOG.find(sk => sk.id === node.id);
+            if (i > 0) skill.req = { id: branch.chain[i - 1].id, lv: node.reqLv };
+        }));
+        const SKILL_MAX_LEVEL = 5;
+
+        function getSkillLevel(skillId) {
+            if (!player.learnedSkills.includes(skillId)) return 0;
+            return Math.min(SKILL_MAX_LEVEL, (player.skillLevels && player.skillLevels[skillId]) || 1);
+        }
+
+        // 技能每升一級：傷害倍率 +10%、回血與回魔 +15%
+        function getSkillPower(skill) {
+            const lv = Math.max(1, getSkillLevel(skill.id));
+            return {
+                mult: Math.round(skill.mult * (1 + 0.1 * (lv - 1)) * 100) / 100,
+                heal: skill.heal ? (skill.heal >= 9999 ? 9999 : Math.round(skill.heal * (1 + 0.15 * (lv - 1)))) : 0,
+                mpGain: skill.mpGain ? Math.round(skill.mpGain * (1 + 0.15 * (lv - 1))) : 0,
+                goldMult: skill.goldMult || 1,
+                guard: !!skill.guard,
+                timeBonus: skill.timeBonus || 0,
+                shieldAfter: !!skill.shieldAfter
+            };
+        }
+
+        function getSkillTagText(skill) {
+            const pw = getSkillPower(skill);
+            const parts = [`${skill.mp} MP`];
+            if (pw.mult !== 1) parts.push(`${pw.mult}倍傷`);
+            if (pw.heal) parts.push(pw.heal >= 9999 ? '回滿HP' : `+${pw.heal}HP`);
+            if (pw.mpGain) parts.push(`回${pw.mpGain}MP`);
+            if (pw.goldMult > 1) parts.push(`金×${pw.goldMult}`);
+            if (pw.guard) parts.push('答錯免傷');
+            if (pw.timeBonus) parts.push(`倒數+${pw.timeBonus}秒`);
+            if (pw.shieldAfter) parts.push('附加護盾');
+            return parts.join('｜');
+        }
+
+        function getSkillLearnChecks(skill) {
+            const checks = [];
+            if (skill.classId) {
+                const cls = CLASS_TREE.find(c => c.id === skill.classId);
+                checks.push({ ok: player.classPath === skill.classId && player.classTier >= skill.tier, text: `${cls.icon}${cls.name}${['一轉', '二轉', '三轉'][skill.tier - 1]}以上` });
+            } else {
+                checks.push({ ok: player.lv >= skill.lvReq, text: `勇者 Lv.${skill.lvReq}` });
+            }
+            if (skill.req) {
+                const pre = SKILL_CATALOG.find(sk => sk.id === skill.req.id);
+                checks.push({ ok: getSkillLevel(skill.req.id) >= skill.req.lv, text: `${pre.icon}${pre.name} Lv.${skill.req.lv}` });
+            }
+            if (skill.spCost) checks.push({ ok: player.skillPoints >= skill.spCost, text: `⭐ ${skill.spCost} 技能點` });
+            if (skill.price) checks.push({ ok: player.gold >= skill.price, text: `${skill.price} 金幣` });
+            return checks;
+        }
 
         /* ==========================================================================
            2-2. 職業轉職系統：見習勇者 → 一轉 → 二轉 → 三轉
@@ -1384,6 +1470,32 @@
         GACHA_OUTFITS.forEach(item => OUTFIT_CATALOG.push({ ...item, price: 0, gacha: true }));
         GACHA_WEAPONS.forEach(item => WEAPON_CATALOG.push({ ...item, price: 0, gacha: true }));
         GACHA_PETS.forEach(item => PET_CATALOG.push({ ...item, price: 0, gacha: true }));
+        CLASS_WEAPONS.forEach(item => WEAPON_CATALOG.push({ price: 0, ...item, gacha: !item.price }));
+
+        // 職業專屬裝備只有對應職業（任一轉）才能裝備
+        function canUseItem(item) {
+            return !!item && (!item.classReq || item.classReq === player.classPath);
+        }
+
+        function classReqBadgeHtml(item) {
+            if (!item.classReq) return '';
+            const cls = CLASS_TREE.find(c => c.id === item.classReq);
+            return `<span class="inline-block bg-stone-700 text-white text-[10px] font-black px-1.5 py-0.5 rounded-md leading-none">${cls.icon}${cls.name}專用</span>`;
+        }
+
+        // 身上裝備（造型、武器、寵物）的某項加成總和；職業不符的武器不計算
+        function getGearStat(key) {
+            const outfit = OUTFIT_CATALOG.find(o => o.id === player.equippedOutfit);
+            const weapon = WEAPON_CATALOG.find(w => w.id === player.equippedWeapon);
+            const pet = PET_CATALOG.find(p => p.id === player.equippedPet);
+            return itemStat(outfit, key) + (canUseItem(weapon) ? itemStat(weapon, key) : 0) + itemStat(pet, key);
+        }
+
+        function getGearCrit() {
+            const weapon = WEAPON_CATALOG.find(w => w.id === player.equippedWeapon);
+            if (!canUseItem(weapon) || !weapon.critBonus) return 0;
+            return weapon.critBonus * (1 + 0.1 * getItemLevel(weapon.id));
+        }
 
         function getRarityInfo(rarityId) {
             return RARITIES.find(r => r.id === rarityId) || RARITIES[0];
@@ -1412,8 +1524,10 @@
             const parts = [];
             if (itemStat(item, 'atkBonus')) parts.push(`攻擊 +${itemStat(item, 'atkBonus')}`);
             if (itemStat(item, 'hpBonus')) parts.push(`HP +${itemStat(item, 'hpBonus')}`);
-            if (itemStat(item, 'goldBonus')) parts.push(`金幣 +${itemStat(item, 'goldBonus')}`);
-            if (itemStat(item, 'mpBonus')) parts.push(`MP +${itemStat(item, 'mpBonus')}`);
+            if (itemStat(item, 'maxMpBonus')) parts.push(`MP上限 +${itemStat(item, 'maxMpBonus')}`);
+            if (item.critBonus) parts.push(`爆擊率 +${Math.round(item.critBonus * (1 + 0.1 * getItemLevel(item.id)) * 100)}%`);
+            if (itemStat(item, 'goldBonus')) parts.push(`答對金幣 +${itemStat(item, 'goldBonus')}`);
+            if (itemStat(item, 'mpBonus')) parts.push(`答對回MP +${itemStat(item, 'mpBonus')}`);
             return parts.length ? parts.join('、') : (category === 'pet' ? '無額外加成' : '外觀造型');
         }
 
@@ -2806,7 +2920,10 @@
                 gachaTotal: 0,
                 itemLevels: {},
                 // 限時作答秒數（0 = 關閉）
-                timerSetting: 10
+                timerSetting: 10,
+                // 技能樹：技能點（每升一級 +1）與各技能等級
+                skillPoints: 0,
+                skillLevels: {}
             };
         }
 
@@ -2833,6 +2950,9 @@
                     if (!Array.isArray(player.masteredClasses)) player.masteredClasses = [];
                     if (!player.conceptStats || typeof player.conceptStats !== 'object') player.conceptStats = {};
                     if (!player.itemLevels || typeof player.itemLevels !== 'object') player.itemLevels = {};
+                    if (!player.skillLevels || typeof player.skillLevels !== 'object') player.skillLevels = {};
+                    // 舊存檔補發過去升級應得的技能點
+                    if (typeof parsed.skillPoints !== 'number') player.skillPoints = Math.max(0, player.lv - 1);
                     return true;
                 }
             } catch (e) {
@@ -2855,21 +2975,19 @@
         function getHeroMaxHp() {
             const info = getClassInfo();
             const classBonus = info && info.tierData.hpBonus ? info.tierData.hpBonus : 0;
-            const outfit = OUTFIT_CATALOG.find(o => o.id === player.equippedOutfit);
-            return 100 + (player.lv - 1) * 15 + (player.armorLv - 1) * 30 + classBonus + itemStat(outfit, 'hpBonus');
+            return 100 + (player.lv - 1) * 15 + (player.armorLv - 1) * 30 + classBonus + getGearStat('hpBonus');
         }
 
         function getHeroMaxMp() {
             const info = getClassInfo();
             const classBonus = info && info.tierData.mpBonus ? info.tierData.mpBonus : 0;
-            return 60 + (player.lv - 1) * 10 + (player.crystalLv - 1) * 20 + classBonus;
+            return 60 + (player.lv - 1) * 10 + (player.crystalLv - 1) * 20 + classBonus + getGearStat('maxMpBonus');
         }
 
         function getHeroAtk() {
             const outfit = OUTFIT_CATALOG.find(o => o.id === player.equippedOutfit);
             const weapon = WEAPON_CATALOG.find(w => w.id === player.equippedWeapon);
-            const pet = PET_CATALOG.find(p => p.id === player.equippedPet);
-            const gearBonus = itemStat(outfit, 'atkBonus') + itemStat(weapon, 'atkBonus') + itemStat(pet, 'atkBonus');
+            const gearBonus = getGearStat('atkBonus');
             const info = getClassInfo();
             const classMult = info && info.tierData.atkMult ? info.tierData.atkMult : 1;
             return Math.round((35 + (player.lv - 1) * 4 + (player.weaponLv - 1) * 10 + gearBonus) * classMult);
@@ -2880,6 +2998,7 @@
             while (player.exp >= player.maxExp) {
                 player.lv += 1;
                 player.exp -= player.maxExp;
+                player.skillPoints = (player.skillPoints || 0) + 1;
                 leveled = true;
             }
             if (leveled) {
@@ -3161,6 +3280,7 @@
                     const glow = rarityIndex(item.rarity) >= 3 ? `box-shadow:0 0 10px ${r.glow};` : '';
                     let btn;
                     if (equipped) btn = `<button disabled class="rpg-btn w-full bg-emerald-600 text-white font-black py-1.5 rounded-lg text-xs">✨ 使用中</button>`;
+                    else if (owned && !canUseItem(item)) btn = `<button disabled class="rpg-btn w-full bg-stone-300 text-stone-600 font-black py-1.5 rounded-lg text-xs">🔒 需要${CLASS_TREE.find(c => c.id === item.classReq).name}職業</button>`;
                     else if (owned) btn = `<button onclick="buyOrEquipCosmetic('${category}', '${item.id}')" class="rpg-btn w-full bg-amber-400 hover:bg-amber-300 text-amber-950 font-black py-1.5 rounded-lg text-xs">${category === 'pet' ? '攜帶出戰' : '裝備'}</button>`;
                     else if (item.gacha) btn = `<button onclick="openGachaModal()" class="rpg-btn w-full bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-black py-1.5 rounded-lg text-xs">🔒 星願召喚限定</button>`;
                     else btn = `<button onclick="buyOrEquipCosmetic('${category}', '${item.id}')" class="rpg-btn w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-1.5 rounded-lg text-xs flex items-center justify-center gap-1"><i class="fa-solid fa-coins text-yellow-300"></i> ${item.price} 金幣購買</button>`;
@@ -3169,7 +3289,7 @@
                         <div class="flex items-center gap-3">
                             <div class="w-14 h-14 shrink-0 flex items-center justify-center rounded-xl bg-amber-50 ${owned ? '' : 'grayscale-[40%]'}">${getItemPreviewSvg(category, item)}</div>
                             <div class="min-w-0">
-                                <div class="flex flex-wrap items-center gap-1 mb-0.5">${rarityBadgeHtml(item.rarity)}${lvl ? `<span class="text-[10px] font-black text-rose-600">+${lvl}</span>` : ''}</div>
+                                <div class="flex flex-wrap items-center gap-1 mb-0.5">${rarityBadgeHtml(item.rarity)}${classReqBadgeHtml(item)}${lvl ? `<span class="text-[10px] font-black text-rose-600">+${lvl}</span>` : ''}</div>
                                 <div class="font-black text-sm text-amber-950 leading-tight">${item.name}</div>
                                 <div class="text-[11px] font-bold ${r.text}">${getItemStatText(category, item)}</div>
                                 <p class="text-[11px] text-amber-800 mt-0.5">${item.desc}</p>
@@ -3221,44 +3341,68 @@
                     `).join('')}
                 </div>`;
             } else if (currentShopTab === 'skills') {
-                const generalSkills = SKILL_CATALOG.filter(s => !s.classId && s.price > 0);
-                const skillCards = generalSkills.map(s => {
-                    const learned = player.learnedSkills.includes(s.id);
-                    const lvOk = player.lv >= s.lvReq;
+                const node = (skill) => {
+                    const lv = getSkillLevel(skill.id);
+                    const learned = lv > 0;
+                    let footer;
+                    if (learned) {
+                        footer = lv >= SKILL_MAX_LEVEL
+                            ? `<button disabled class="rpg-btn w-full bg-emerald-600 text-white font-black py-1.5 rounded-lg text-xs">🌟 已達最高等級</button>`
+                            : `<button onclick="upgradeSkill('${skill.id}')" class="rpg-btn w-full ${player.skillPoints >= lv ? 'bg-amber-500 hover:bg-amber-400 text-white' : 'bg-stone-200 text-stone-500'} font-black py-1.5 rounded-lg text-xs">⬆️ 升到 Lv.${lv + 1}（⭐ ${lv}）</button>`;
+                    } else if (skill.classId && !skill.branchSkill) {
+                        footer = `<div class="text-[11px] font-bold text-fuchsia-700 text-center">${['一轉', '二轉', '三轉'][skill.tier - 1]}時自動學會</div>`;
+                    } else {
+                        const checks = getSkillLearnChecks(skill);
+                        footer = `<div class="text-[11px] font-bold space-y-0.5 mb-1.5">${checks.map(c => `<div class="${c.ok ? 'text-emerald-700' : 'text-rose-700'}">${c.ok ? '✅' : '⬜'} ${c.text}</div>`).join('')}</div>
+                            <button onclick="learnSkill('${skill.id}')" class="rpg-btn w-full ${checks.every(c => c.ok) ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-stone-200 text-stone-500'} font-black py-1.5 rounded-lg text-xs">📘 學習技能</button>`;
+                    }
                     return `
-                    <div class="storybook-panel p-3 flex flex-col justify-between ${learned ? 'bg-emerald-50' : 'bg-white'}">
+                    <div class="storybook-panel p-2.5 flex-1 min-w-0 sm:min-w-[150px] flex flex-col justify-between ${learned ? 'bg-emerald-50' : 'bg-white opacity-95'}">
                         <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="font-black text-base text-amber-950">${s.icon} ${s.name}</span>
-                                <span class="bg-sky-100 text-sky-900 border border-sky-400 text-[11px] font-black px-2 py-0.5 rounded-full">${s.tag}</span>
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="font-black text-sm text-amber-950">${skill.icon} ${skill.name}</span>
+                                <span class="text-[10px] font-black ${learned ? 'text-rose-600' : 'text-stone-400'}">${learned ? `Lv.${lv}/${SKILL_MAX_LEVEL}` : '未學會'}</span>
                             </div>
-                            <p class="text-xs text-amber-800 font-medium">${s.desc}</p>
-                            <p class="text-[11px] font-bold mt-1 ${lvOk ? 'text-emerald-700' : 'text-rose-700'}">需求等級：Lv.${s.lvReq}</p>
+                            <div class="flex gap-0.5 my-1">${Array.from({ length: SKILL_MAX_LEVEL }, (_, i) => `<span class="h-1.5 flex-1 rounded-full ${i < lv ? 'bg-amber-500' : 'bg-stone-200'}"></span>`).join('')}</div>
+                            <div class="text-[10px] font-black text-sky-800 bg-sky-50 border border-sky-200 rounded px-1.5 py-0.5 mb-1">${getSkillTagText(skill)}</div>
+                            <p class="text-[11px] text-amber-800 font-medium mb-1.5">${skill.desc}</p>
                         </div>
-                        <div class="mt-2.5">
-                            ${learned
-                                ? `<button disabled class="rpg-btn w-full bg-emerald-600 text-white font-black py-1.5 rounded-lg text-xs">✨ 已學會</button>`
-                                : `<button onclick="learnSkill('${s.id}')" class="rpg-btn w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-1.5 rounded-lg text-xs flex items-center justify-center gap-1"><i class="fa-solid fa-coins text-yellow-300"></i> ${s.price} 金幣學習</button>`
-                            }
-                        </div>
+                        <div>${footer}</div>
                     </div>`;
-                }).join('');
+                };
+                const arrow = '<div class="self-center text-amber-600 font-black text-lg rotate-90 sm:rotate-0">➜</div>';
+                const branchRows = SKILL_BRANCHES.map(branch => `
+                    <div>
+                        <h4 class="font-black text-sm text-amber-950 mb-1.5">${branch.icon} ${branch.name}</h4>
+                        <div class="flex flex-col sm:flex-row gap-2">${branch.chain.map(n => node(SKILL_CATALOG.find(sk => sk.id === n.id))).join(arrow)}</div>
+                    </div>`).join('');
 
-                const classSkillRows = CLASS_TREE.map(c => {
-                    const skills = SKILL_CATALOG.filter(s => s.classId === c.id).map(s => {
-                        const learned = player.learnedSkills.includes(s.id);
-                        return `<span class="inline-block ${learned ? 'bg-fuchsia-600 text-white' : 'bg-white text-stone-500'} border border-fuchsia-400 text-[11px] font-black px-2 py-0.5 rounded-full mr-1 mb-1">${s.icon} ${s.name}（${['一轉', '二轉', '三轉'][s.tier - 1]}）${learned ? ' ✓' : ''}</span>`;
-                    }).join('');
-                    return `<div class="mb-1.5"><b class="text-xs text-amber-950">${c.icon} ${c.name}：</b>${skills}</div>`;
-                }).join('');
+                const info = getClassInfo();
+                let classTree;
+                if (info) {
+                    const tierSkills = SKILL_CATALOG.filter(sk => sk.classId === info.path.id && !sk.branchSkill).sort((a, b) => a.tier - b.tier);
+                    const branchSkill = SKILL_CATALOG.find(sk => sk.classId === info.path.id && sk.branchSkill);
+                    classTree = `
+                        <div class="flex flex-col sm:flex-row gap-2">${tierSkills.map(node).join(arrow)}</div>
+                        <div class="text-xs font-black text-fuchsia-800 mt-2 mb-1">↳ 進階分支（二轉後，用技能點學習）：</div>
+                        <div class="flex flex-col sm:flex-row gap-2">${node(branchSkill)}</div>`;
+                } else {
+                    classTree = `<p class="text-xs font-bold text-fuchsia-800">完成一轉後，這裡會出現職業專屬技能樹（三招轉職技能＋一招進階分支技能）。</p>`;
+                }
 
                 area.innerHTML = `
                 <div class="space-y-4">
-                    <p class="text-xs font-bold text-amber-900 bg-amber-50 border border-amber-300 rounded-xl px-3 py-2">📘 學會的技能會出現在戰鬥畫面的「攻擊技能模式」，選好技能再答題，答對就會發動！</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${skillCards}</div>
+                    <div class="storybook-panel p-3 bg-gradient-to-r from-amber-100 to-sky-100 flex flex-wrap items-center justify-between gap-2">
+                        <div class="font-black text-amber-950">⭐ 技能點：<span class="text-2xl text-amber-600">${player.skillPoints}</span></div>
+                        <div class="text-[11px] font-bold text-amber-900">每升 1 級獲得 1 點。技能升級花費 = 目前等級的點數；每升一級傷害 +10%、回血回魔 +15%。</div>
+                    </div>
+                    <div class="storybook-panel p-3 bg-white space-y-3">
+                        <h4 class="font-black text-base text-amber-950">📘 通用技能樹</h4>
+                        ${branchRows}
+                    </div>
                     <div class="storybook-panel p-3 bg-fuchsia-50">
-                        <h4 class="font-black text-sm text-fuchsia-900 mb-2"><i class="fa-solid fa-crown mr-1"></i>職業專屬技能（轉職後自動習得）：</h4>
-                        ${classSkillRows}
+                        <h4 class="font-black text-base text-fuchsia-900 mb-2"><i class="fa-solid fa-crown mr-1"></i>${info ? `${info.path.icon} ${info.path.name}職業技能樹` : '職業技能樹'}</h4>
+                        ${classTree}
                     </div>
                 </div>`;
             } else if (currentShopTab === 'class') {
@@ -3281,7 +3425,7 @@
                 const pathCards = paths.map(c => {
                     const tierList = c.tiers.map((t, i) => {
                         const reached = info && player.classTier >= i + 1;
-                        const skill = SKILL_CATALOG.find(s => s.classId === c.id && s.tier === i + 1);
+                        const skill = SKILL_CATALOG.find(s => s.classId === c.id && s.tier === i + 1 && !s.branchSkill);
                         return `<li class="${reached ? 'text-emerald-800' : 'text-amber-900'}">${reached ? '⭐' : '▫️'} <b>${CLASS_ADVANCE_REQS[i].label}・${t.name}</b>：${t.bonusText}；技能 ${skill.icon}${skill.name}</li>`;
                     }).join('');
                     const btn = next
@@ -3321,22 +3465,38 @@
         }
 
         function learnSkill(skillId) {
-            const skill = SKILL_CATALOG.find(s => s.id === skillId);
-            if (!skill || skill.classId || player.learnedSkills.includes(skillId)) return;
-            if (player.lv < skill.lvReq) {
+            const skill = SKILL_CATALOG.find(sk => sk.id === skillId);
+            if (!skill || player.learnedSkills.includes(skillId)) return;
+            if (skill.classId && !skill.branchSkill) return;
+            const missing = getSkillLearnChecks(skill).filter(c => !c.ok);
+            if (missing.length) {
                 playSfx('wrong');
-                setShopFeedback(`⚠️ 等級不足！學習【${skill.name}】需要 Lv.${skill.lvReq}，多答幾題來升級吧！`, true);
-                return;
-            }
-            if (player.gold < skill.price) {
-                playSfx('wrong');
-                setShopFeedback(`⚠️ 金幣不足！學習【${skill.name}】需要 ${skill.price} 金幣喔！`, true);
+                setShopFeedback(`⚠️ 還不能學【${skill.name}】：需要 ${missing.map(c => c.text).join('、')}`, true);
                 return;
             }
             playSfx('upgrade');
-            player.gold -= skill.price;
+            if (skill.price) player.gold -= skill.price;
+            if (skill.spCost) player.skillPoints -= skill.spCost;
             player.learnedSkills.push(skillId);
             setShopFeedback(`📘 恭喜學會新技能【${skill.icon} ${skill.name}】！戰鬥時就能使用囉！`);
+            savePlayerProgress();
+            refreshShopUI();
+            updateTopHud();
+        }
+
+        function upgradeSkill(skillId) {
+            const skill = SKILL_CATALOG.find(sk => sk.id === skillId);
+            const lv = getSkillLevel(skillId);
+            if (!skill || !lv || lv >= SKILL_MAX_LEVEL) return;
+            if (player.skillPoints < lv) {
+                playSfx('wrong');
+                setShopFeedback(`⚠️ 技能點不足！【${skill.name}】升到 Lv.${lv + 1} 需要 ⭐${lv}，多答題升級就能獲得技能點！`, true);
+                return;
+            }
+            playSfx('upgrade');
+            player.skillPoints -= lv;
+            player.skillLevels[skillId] = lv + 1;
+            setShopFeedback(`⬆️【${skill.icon} ${skill.name}】升到 Lv.${lv + 1}！效果：${getSkillTagText(skill)}`);
             savePlayerProgress();
             refreshShopUI();
             updateTopHud();
@@ -3377,6 +3537,7 @@
             player.classPath = null;
             player.classTier = 0;
             player.classCorrect = 0;
+            if (!canUseItem(WEAPON_CATALOG.find(w => w.id === player.equippedWeapon))) player.equippedWeapon = 'wood_staff';
             if (!player.learnedSkills.includes(battleState.selectedSkill)) battleState.selectedSkill = 'normal';
             player.hp = Math.min(player.hp, getHeroMaxHp());
             player.mp = Math.min(player.mp, getHeroMaxMp());
@@ -3405,7 +3566,7 @@
             player.classTier = next.tier;
             player.classCorrect = 0;
             if (next.tier === 3 && !player.masteredClasses.includes(pathId)) player.masteredClasses.push(pathId);
-            const skill = SKILL_CATALOG.find(s => s.classId === pathId && s.tier === next.tier);
+            const skill = SKILL_CATALOG.find(s => s.classId === pathId && s.tier === next.tier && !s.branchSkill);
             if (skill && !player.learnedSkills.includes(skill.id)) player.learnedSkills.push(skill.id);
             player.hp = getHeroMaxHp();
             player.mp = getHeroMaxMp();
@@ -3491,6 +3652,14 @@
                 } else {
                     playSfx('select');
                     setShopFeedback(`⚔️ 已裝備【${item.name}】！`);
+                }
+                if (!canUseItem(item)) {
+                    const cls = CLASS_TREE.find(c => c.id === item.classReq);
+                    setShopFeedback(`🔒【${item.name}】是${cls.icon}${cls.name}專用武器，轉職成${cls.name}後才能裝備喔！`, true);
+                    savePlayerProgress();
+                    refreshShopUI();
+                    updateTopHud();
+                    return;
                 }
                 player.equippedWeapon = id;
             } else if (category === 'pet') {
@@ -3814,8 +3983,8 @@
             const skillBtns = getLearnedSkills().map(s => `
                 <button onclick="selectBattleSkill('${s.id}')" id="skillBtn_${s.id}"
                     class="rpg-btn ${s.classId ? 'bg-fuchsia-100 hover:bg-fuchsia-200 text-fuchsia-950' : 'bg-orange-100 hover:bg-orange-200 text-orange-950'} font-black p-1.5 rounded-xl text-xs flex flex-col items-center justify-center">
-                    <div>${s.icon} ${s.name}</div>
-                    <span class="text-[10px] opacity-80">${s.tag}</span>
+                    <div>${s.icon} ${s.name} <span class="text-[10px] text-rose-600">Lv.${getSkillLevel(s.id)}</span></div>
+                    <span class="text-[10px] opacity-80">${getSkillTagText(s)}</span>
                 </button>`).join('');
             document.getElementById('skillButtonsGrid').innerHTML = skillBtns + `
                 <button onclick="useSmartLens(false)" id="skillBtn_lens"
@@ -3953,7 +4122,7 @@
                 }
             });
 
-            document.getElementById('activeSkillHint').textContent = `${skill.icon} ${skill.name}（${skill.tag}）`;
+            document.getElementById('activeSkillHint').textContent = `${skill.icon} ${skill.name} Lv.${getSkillLevel(skill.id)}（${getSkillTagText(skill)}）`;
         }
 
         function useSmartLens(fromScroll = false) {
@@ -4002,7 +4171,7 @@
                 return;
             }
             const remain = Math.max(0, battleState.cdRemaining);
-            bar.style.width = `${(remain / cd) * 100}%`;
+            bar.style.width = `${Math.min(100, (remain / cd) * 100)}%`;
             bar.className = remain <= 3
                 ? 'bg-gradient-to-r from-red-500 to-rose-600 h-full cd-danger'
                 : 'bg-gradient-to-r from-amber-400 to-orange-500 h-full';
@@ -4082,6 +4251,11 @@
             if (battleState.resetTimerNext || !(battleState.cdRemaining > 0)) {
                 battleState.resetTimerNext = false;
                 resetAttackTimer();
+                if (battleState.nextTimerBonus) {
+                    battleState.cdRemaining += battleState.nextTimerBonus;
+                    battleState.nextTimerBonus = 0;
+                    renderAttackTimer();
+                }
             } else {
                 renderAttackTimer();
             }
@@ -4281,28 +4455,30 @@
                 if (player.mp < skill.mp) skill = SKILL_CATALOG[0];
 
                 player.mp -= skill.mp;
+                const power = getSkillPower(skill);
                 const classInfo = getClassInfo();
-                const isCrit = !!(classInfo && classInfo.tierData.critChance && Math.random() < classInfo.tierData.critChance);
-                const dmg = Math.round(baseAtk * skill.mult * (isCrit ? 2 : 1));
+                const critChance = (classInfo && classInfo.tierData.critChance ? classInfo.tierData.critChance : 0) + getGearCrit();
+                const isCrit = critChance > 0 && Math.random() < critChance;
+                const dmg = Math.round(baseAtk * power.mult * (isCrit ? 2 : 1));
                 let extraNote = skill.id === 'normal' ? '' : `（${skill.icon}${skill.name}！）`;
                 if (isCrit) extraNote += '（💥爆擊！傷害×2）';
 
-                if (skill.heal) {
-                    const healAmt = Math.min(skill.heal, getHeroMaxHp() - player.hp);
+                if (power.heal) {
+                    const healAmt = Math.min(power.heal, getHeroMaxHp() - player.hp);
                     player.hp += healAmt;
                     extraNote += `（🌿回復 ${healAmt} HP）`;
                 }
-                if (skill.mpGain) {
-                    const mpGain = skill.mpGain + itemStat(pet, 'mpBonus');
+                if (power.mpGain) {
+                    const mpGain = power.mpGain + itemStat(pet, 'mpBonus');
                     player.mp = Math.min(getHeroMaxMp(), player.mp + mpGain);
                 }
 
                 // 計算答對獲得的金幣（基礎 30 + 連對獎勵 + 寵物與職業加成），再乘上技能與四葉草倍率
-                const petGold = itemStat(pet, 'goldBonus');
+                const petGold = getGearStat('goldBonus');
                 const classGold = classInfo && classInfo.tierData.goldBonus ? classInfo.tierData.goldBonus : 0;
                 const streakGold = Math.min(30, (battleState.streak - 1) * 5);
                 const baseGold = battleState.isMistakeMode ? 50 : 30;
-                let goldMult = skill.goldMult || 1;
+                let goldMult = power.goldMult;
                 if (battleState.luckyTurns > 0) {
                     battleState.luckyTurns -= 1;
                     goldMult *= 2;
@@ -4320,6 +4496,14 @@
                 }
 
                 battleState.monsterHp = Math.max(0, battleState.monsterHp - dmg);
+                if (power.shieldAfter) {
+                    battleState.shieldActive = true;
+                    extraNote += '（🛡️展開護盾）';
+                }
+                if (power.timeBonus) {
+                    battleState.nextTimerBonus = power.timeBonus;
+                    extraNote += `（⏳下次倒數 +${power.timeBonus} 秒）`;
+                }
 
                 // 檢查升級
                 if (checkLevelUp()) {
